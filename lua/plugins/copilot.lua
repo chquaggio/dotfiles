@@ -2,6 +2,7 @@ return {
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
+    enabled = false,
     build = ":Copilot auth",
     opts = {
       suggestion = { enabled = false },
@@ -15,6 +16,7 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     optional = true,
+    enabled = false,
     event = "VeryLazy",
     opts = function(_, opts)
       local Util = require("lazyvim.util")
@@ -47,6 +49,7 @@ return {
   {
     "zbirenbaum/copilot-cmp",
     dependencies = "copilot.lua",
+    enabled = false,
     opts = {},
     config = function(_, opts)
       local copilot_cmp = require("copilot_cmp")

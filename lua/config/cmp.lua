@@ -2,7 +2,7 @@ local cmp = require("cmp")
 
 cmp.setup({
   sources = {
-    -- { name = "copilot", group_index = 2 },
+    { name = "copilot", group_index = 2 },
     { name = "codeium", group_index = 2 },
   },
   formatting = {

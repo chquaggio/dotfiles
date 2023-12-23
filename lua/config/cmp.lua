@@ -29,4 +29,7 @@ cmp.setup({
       cmp.config.compare.order,
     },
   },
+  mapping = {
+    ["<Tab>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+  },
 })

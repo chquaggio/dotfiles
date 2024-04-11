@@ -1,6 +1,5 @@
 -- bootstrap lazy.nvim, LazyVim and your plugins
 require("config.lazy")
-vim.env.DEBUG_CODEIUM = "debug"
 require("mason").setup()
 require("mason-lspconfig").setup()
 require("lspconfig").pylsp.setup({

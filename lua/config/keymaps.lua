@@ -30,3 +30,6 @@ vim.keymap.set("n", "<leader>cp", ":Copilot panel<CR>", { noremap = true, silent
 vim.keymap.set("n", "<leader>al", ":AerialToggle<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>t", "<CMD>lua require('FTerm').toggle()<CR>", { noremap = true, silent = true })
 vim.keymap.set("t", "<leader>t", "<C-\\><C-n><CMD>lua require('FTerm').toggle()<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>rr", "<Plug>RestNvim", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>rp", "<Plug>RestNvimPreview", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>rl", "<Plug>RestNvimLast", { noremap = true, silent = true })

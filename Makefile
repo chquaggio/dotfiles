@@ -12,15 +12,17 @@ backup: # Full Backup
 
 backup_config: #Back up specified files in .config
 	@for dir in $(CONFIG_DIRS); do \
+		echo $$dir; \
 		if [ -d "$(HOME)/.config/$$dir" ]; then \
-		echo "Backing up $$dir..."; \
-		rm -rf "config/$$dir/" && \
-		cp -r "$(HOME)/.config/$$dir/" "config/$$dir/" && \
-		echo "Successful $$dir backup"; \
+			echo "Backing up $$dir..."; \
+			rm -rf "config/$$dir/" && \
+			cp -r "$(HOME)/.config/$$dir/" "config/$$dir/" && \
+			echo "Successful $$dir backup"; \
 		else \
-		echo "Failed to backup $$dir - directory does not exist"; \
-		fi \
-		done
+			echo "Failed to backup $$dir - directory does not exist"; \
+		fi; \
+	done
+
 
 
 backup_tmux: # Backup TMUX Config

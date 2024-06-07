@@ -45,3 +45,6 @@ require("lazy").setup({
     },
   },
 })
+
+-- local cmp = require("cmp")
+-- vim.print("cmp setup", cmp.get_config())

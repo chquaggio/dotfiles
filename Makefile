@@ -41,12 +41,12 @@ restore: # Full restore
 restore_config: # Restore all /.config files
 	@for dir in $(CONFIG_DIRS); do \
 		if [ -d "config/$$dir" ]; then \
-		echo "Restoring $$dir..."; \
-		cp -rf "config/$$dir/" "$(HOME)/.config/$$dir/" && \
-		echo "Successful restore of $$dir"; \
+			echo "Restoring $$dir..."; \
+			cp -rf "config/$$dir/" "$(HOME)/.config/" && \
+			echo "Successful restore of $$dir"; \
 		else \
-		echo "Backup of $$dir not found"; \
-		fi \
+			echo "Backup of $$dir not found"; \
+		fi; \
 		done
 
 

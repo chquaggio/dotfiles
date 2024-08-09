@@ -7,7 +7,7 @@ require("lspconfig").pylsp.setup({
     pylsp = {
       plugins = {
         pycodestyle = {
-          ignore = { "W391" },
+          ignore = { "W391", "W503" },
           maxLineLength = 136,
         },
         pyflakes = {
@@ -44,11 +44,3 @@ package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
 vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))
 require("mini.surround").setup()
-
--- local navbuddy = require("nvim-navbuddy")
---
--- require("lspconfig").clangd.setup({
---   on_attach = function(client, bufnr)
---     navbuddy.attach(client, bufnr)
---   end,
--- })

@@ -4,6 +4,7 @@ cmp.setup({
   sources = {
     { name = "copilot", group_index = 2 },
     { name = "codeium", group_index = 2 },
+    { name = "nerdfonts" },
   },
   formatting = {
     format = require("lspkind").cmp_format({

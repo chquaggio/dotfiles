@@ -24,7 +24,7 @@ return {
   },
   opts = {
     question_header = " User ",
-    answer_header = "## Copilot ",
+    answer_header = " Copilot ",
     error_header = "## Error ",
     prompts = prompts,
     auto_follow_cursor = false, -- Don't follow the cursor after getting response

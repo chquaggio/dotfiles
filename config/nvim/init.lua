@@ -10,9 +10,9 @@ require("lspconfig").pylsp.setup({
           ignore = { "W391", "W503" },
           maxLineLength = 136,
         },
-        pyflakes = {
-          enabled = false,
-        },
+        -- pyflakes = {
+        --   enabled = false,
+        -- },
       },
     },
   },

@@ -3,6 +3,7 @@ local prompts = {
   Explain = "Please explain how the following code works.",
   Review = "Please review the following code and provide suggestions for improvement.",
   Tests = "Please generate unit tests for the following code.",
+  Docstrings = "Please generate detailed docstrings for the following code.",
   Refactor = "Please refactor the following code to improve its clarity and readability.",
   FixCode = "Please fix the following code to make it work as intended.",
   FixError = "Please explain the error in the following text and provide a solution.",
@@ -27,6 +28,7 @@ return {
     answer_header = " Copilot ",
     error_header = "## Error ",
     prompts = prompts,
+    model = "claude-3.5-sonnet",
     auto_follow_cursor = false, -- Don't follow the cursor after getting response
     show_help = false, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
     mappings = {

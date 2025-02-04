@@ -20,17 +20,24 @@ local prompts = {
 return {
   "CopilotC-Nvim/CopilotChat.nvim",
   dependencies = {
-    { "nvim-telescope/telescope.nvim" }, -- Use telescope for help actions
+    { "zbirenbaum/copilot.lua" },
     { "nvim-lua/plenary.nvim" },
   },
+  build = "make tiktoken", -- Only on MacOS or Linux
   opts = {
     question_header = " User ",
-    answer_header = " Copilot ",
+    answer_header = " Copilot ",
     error_header = "## Error ",
     prompts = prompts,
-    model = "claude-3.5-sonnet",
+    model = "gpt-4o",
     auto_follow_cursor = false, -- Don't follow the cursor after getting response
     show_help = false, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
+    contexts = {
+      git = {
+        diff = true,
+        commit = true,
+      },
+    },
     mappings = {
       -- Use tab for completion
       complete = {
@@ -75,56 +82,56 @@ return {
       },
     },
   },
-  config = function(_, opts)
-    local chat = require("CopilotChat")
-    local select = require("CopilotChat.select")
-    -- -- Use unnamed register for the selection
-    -- opts.selection = select.unnamed
-
-    -- Override the git prompts message
-    opts.prompts.Commit = {
-      prompt = "Write commit message for the change with commitizen convention",
-      selection = select.gitdiff,
-    }
-    opts.prompts.CommitStaged = {
-      prompt = "Write commit message for the change with commitizen convention",
-      selection = function(source)
-        return select.gitdiff(source, true)
-      end,
-    }
-
-    chat.setup(opts)
-
-    -- Restore CopilotChatBuffer
-    vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
-      chat.ask(args.args, { selection = select.buffer })
-    end, { nargs = "*", range = true })
-
-    -- Custom buffer for CopilotChat
-    vim.api.nvim_create_autocmd("BufEnter", {
-      pattern = "copilot-*",
-      callback = function()
-        vim.opt_local.relativenumber = true
-        vim.opt_local.number = true
-
-        -- Get current filetype and set it to markdown if the current filetype is copilot-chat
-        local ft = vim.bo.filetype
-        if ft == "copilot-chat" then
-          vim.bo.filetype = "markdown"
-        end
-      end,
-    })
-
-    -- Add which-key mappings
-    local wk = require("which-key")
-    wk.add({
-      { "<leader>gm", group = "+Copilot Chat" }, -- group
-      { "<leader>gmd", desc = "Show diff" },
-      { "<leader>gmp", desc = "System prompt" },
-      { "<leader>gms", desc = "Show selection" },
-      { "<leader>gmy", desc = "Yank diff" },
-    })
-  end,
+  -- config = function(_, opts)
+  --   local chat = require("CopilotChat")
+  --   local select = require("CopilotChat.select")
+  --   -- -- Use unnamed register for the selection
+  --   -- opts.selection = select.unnamed
+  --
+  --   -- Override the git prompts message
+  --   opts.prompts.Commit = {
+  --     prompt = "Write commit message for the change with commitizen convention",
+  --     selection = select.gitdiff,
+  --   }
+  --   opts.prompts.CommitStaged = {
+  --     prompt = "Write commit message for the change with commitizen convention",
+  --     selection = function(source)
+  --       return select.gitdiff(source, true)
+  --     end,
+  --   }
+  --
+  --   chat.setup(opts)
+  --
+  --   -- Restore CopilotChatBuffer
+  --   vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
+  --     chat.ask(args.args, { selection = select.buffer })
+  --   end, { nargs = "*", range = true })
+  --
+  --   -- Custom buffer for CopilotChat
+  --   vim.api.nvim_create_autocmd("BufEnter", {
+  --     pattern = "copilot-*",
+  --     callback = function()
+  --       vim.opt_local.relativenumber = true
+  --       vim.opt_local.number = true
+  --
+  --       -- Get current filetype and set it to markdown if the current filetype is copilot-chat
+  --       local ft = vim.bo.filetype
+  --       if ft == "copilot-chat" then
+  --         vim.bo.filetype = "markdown"
+  --       end
+  --     end,
+  --   })
+  --
+  --   -- Add which-key mappings
+  --   local wk = require("which-key")
+  --   wk.add({
+  --     { "<leader>gm", group = "+Copilot Chat" }, -- group
+  --     { "<leader>gmd", desc = "Show diff" },
+  --     { "<leader>gmp", desc = "System prompt" },
+  --     { "<leader>gms", desc = "Show selection" },
+  --     { "<leader>gmy", desc = "Yank diff" },
+  --   })
+  -- end,
   event = "VeryLazy",
   keys = {
     -- Code related commands
@@ -150,17 +157,6 @@ return {
         end
       end,
       desc = "CopilotChat - Ask input",
-    },
-    -- Generate commit message based on the git diff
-    {
-      "<leader>am",
-      "<cmd>CopilotChatCommit<cr>",
-      desc = "CopilotChat - Generate commit message for all changes",
-    },
-    {
-      "<leader>aM",
-      "<cmd>CopilotChatCommitStaged<cr>",
-      desc = "CopilotChat - Generate commit message for staged changes",
     },
     -- Quick chat with Copilot
     {

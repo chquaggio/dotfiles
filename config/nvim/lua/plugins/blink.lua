@@ -96,27 +96,27 @@ return {
             { "kind_icon", gap = 1 },
             { "kind" },
           },
-          -- components = {
-          --   kind_icon = {
-          --     text = function(item)
-          --       local kind = require("lspkind").symbol_map[item.kind] or ""
-          --       return kind .. " "
-          --     end,
-          --     -- highlight = "CmpItemKind",
-          --   },
-          --   label = {
-          --     text = function(item)
-          --       return item.label
-          --     end,
-          --     -- highlight = "CmpItemAbbr",
-          --   },
-          --   kind = {
-          --     text = function(item)
-          --       return item.kind
-          --     end,
-          --     -- highlight = "CmpItemKind",
-          --   },
-          -- },
+          components = {
+            kind_icon = {
+              text = function(item)
+                local kind = require("lspkind").symbol_map[item.kind] or ""
+                return kind .. " "
+              end,
+              -- highlight = "CmpItemKind",
+            },
+            label = {
+              text = function(item)
+                return item.label
+              end,
+              -- highlight = "CmpItemAbbr",
+            },
+            kind = {
+              text = function(item)
+                return item.kind
+              end,
+              -- highlight = "CmpItemKind",
+            },
+          },
         },
       },
     },

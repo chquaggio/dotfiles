@@ -136,6 +136,7 @@ return {
   keys = {
     -- Code related commands
     { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
+    { "<leader>ac", "<cmd>CopilotChatCommit<cr>", desc = "CopilotChat - Generate commit" },
     { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
     { "<leader>ar", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
     { "<leader>aR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },

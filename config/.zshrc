@@ -35,4 +35,9 @@ dcd()
   docker compose down "$@"
 }
 
+dl()
+{
+  docker logs "$@"
+}
+
 autoload -U +X bashcompinit && bashcompinit

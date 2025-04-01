@@ -1,0 +1,30 @@
+C-b C-b     Send the prefix key
+C-b C-o     Rotate through the panes
+C-b C-z     Suspend the current client
+C-b Space   Select next layout
+C-b !       Break pane to a new window
+C-b "       Split window vertically
+C-b #       List all paste buffers
+C-b $       Rename current session
+C-b %       Split window horizontally
+C-b &       Kill current window
+C-b '       Prompt for window index to select
+C-b (       Switch to previous client
+C-b )       Switch to next client
+C-b ,       Rename current window
+C-b -       Delete the most recent paste buffer
+C-b .       Move the current window
+C-b /       Describe key binding
+C-b 0       Select window 0
+C-b 1       Select window 1
+C-b :       Prompt for a command
+C-b ;       Move to the previously active pane
+C-b =       Choose a paste buffer from a list
+C-b ?       List key bindings
+C-b C       Customize options
+-b C-b     Send the prefix key
+C-b C-o     Rotate through the panes
+C-b C-z     Suspend the current client
+C-b Space   Select next layout
+C-b !       Break pane to a new window
+

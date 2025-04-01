@@ -16,7 +16,7 @@ export PYTHONPATH=$PYTHONPATH:/home/dev/genai/gpa
 
 bindkey -v
 alias vim=nvim
-alias cat=batcat
+alias cat="batcat -p"
 alias python=python3
 alias dps="docker ps"
 

@@ -1,0 +1,12 @@
+customCommands:
+  - key: '<C-p>'
+    context: 'files'
+    description: 'Generate commit message with Copilot'
+    loadingText: 'Processing commit...'
+    prompts:
+      - type: 'input'
+        title: 'Generated Commit Message'
+        key: 'CommitMessage'
+        initialValue: "{{ runCommand \"nvim --headless -u /home/dev/.config/nvim/init.lua -l /home/dev/.config/nvim/lua/scripts/run_cc_headless.lua\" }}"
+    command: "git commit -m {{.Form.CommitMessage | quote}}"
+    output: terminal

@@ -1,10 +1,16 @@
 SHELL := /bin/zsh
-CONFIG_DIRS := nvim
+CONFIG_DIRS := nvim lazygit
+
+ifndef DEVENV
+$(error DEVENV is not set. Please run make <command> DEVENV=<env>)
+endif
 
 help: # Print help on Makefile
+	@echo "Usage: make [target] DEVENV=<env>"
 	@grep '^[^.#]\+:\s\+.*#' Makefile | \
 	sed "s/\(.\+\):\s*\(.*\) #\s*\(.*\)/`printf "\033[93m"`\1`printf "\033[0m"`	\3 [\2]/" | \
 	expand -t20
+
 
 backup: # Full Backup
 	$(MAKE) backup_config
@@ -16,8 +22,8 @@ backup_config: #Back up specified files in .config
 		echo $$dir; \
 		if [ -d "$(HOME)/.config/$$dir" ]; then \
 			echo "Backing up $$dir..."; \
-			rm -rf "config/$$dir/" && \
-			cp -r "$(HOME)/.config/$$dir/" "config/$$dir/" && \
+			rm -rf "$(DEVENV)/config/$$dir/" && \
+			cp -r "$(HOME)/.config/$$dir/" "$(DEVENV)/config/$$dir/" && \
 			echo "Successful $$dir backup"; \
 		else \
 			echo "Failed to backup $$dir - directory does not exist"; \
@@ -25,11 +31,10 @@ backup_config: #Back up specified files in .config
 	done
 
 
-
 backup_tmux: # Backup TMUX Config
 	@if [ -f $(HOME)/.tmux.conf ]; then \
-		[ -f config/tmux.conf ] && rm config/tmux.conf; \
-		cp $(HOME)/.tmux.conf config/tmux.conf && \
+		[ -f $(DEVENV)/config/tmux.conf ] && rm $(DEVENV)/config/tmux.conf; \
+		cp $(HOME)/.tmux.conf $(DEVENV)/config/tmux.conf && \
 		echo "Successful TMUX backup"; \
 	else \
 		echo "Failed TMUX backup"; \
@@ -37,10 +42,10 @@ backup_tmux: # Backup TMUX Config
 
 backup_zsh: # Backup ZSH Config
 	@if [ -f $(HOME)/.zshrc ] && [ -f $(HOME)/.zsh_plugins.txt ]; then \
-		[ -f config/.zshrc ] && rm config/.zshrc; \
-		[ -f config/.zsh_plugins.txt ] && rm config/.zsh_plugins.txt; \
-		cp $(HOME)/.zshrc config/.zshrc && \
-		cp $(HOME)/.zsh_plugins.txt config/.zsh_plugins.txt && \
+		[ -f $(DEVENV)/config/.zshrc ] && rm $(DEVENV)/config/.zshrc; \
+		[ -f $(DEVENV)/config/.zsh_plugins.txt ] && rm $(DEVENV)/config/.zsh_plugins.txt; \
+		cp $(HOME)/.zshrc $(DEVENV)/config/.zshrc && \
+		cp $(HOME)/.zsh_plugins.txt $(DEVENV)/config/.zsh_plugins.txt && \
 		echo "Successful ZSH backup"; \
 	else \
 		echo "Failed ZSH backup"; \
@@ -53,9 +58,9 @@ restore: # Full restore
 
 restore_config: # Restore all /.config files
 	@for dir in $(CONFIG_DIRS); do \
-		if [ -d "config/$$dir" ]; then \
+		if [ -d "$(DEVENV)/config/$$dir" ]; then \
 			echo "Restoring $$dir..."; \
-			cp -rf "config/$$dir/" "$(HOME)/.config/" && \
+			cp -rf "$(DEVENV)/config/$$dir/" "$(HOME)/.config/" && \
 			echo "Successful restore of $$dir"; \
 		else \
 			echo "Backup of $$dir not found"; \
@@ -64,12 +69,12 @@ restore_config: # Restore all /.config files
 
 
 restore_tmux: # Restore .tmux.conf file
-	@cp -f config/tmux.conf $(HOME)/.tmux.conf
+	@cp -f $(DEVENV)/config/tmux.conf $(HOME)/.tmux.conf
 
 restore_zsh: # Restore ZSH Config
-	@if [ -f config/.zshrc ] && [ -f config/.zsh_plugins.txt ]; then \
-		cp config/.zshrc $(HOME)/.zshrc && \
-		cp config/.zsh_plugins.txt $(HOME)/.zsh_plugins.txt && \
+	@if [ -f $(DEVENV)/config/.zshrc ] && [ -f $(DEVENV)/config/.zsh_plugins.txt ]; then \
+		cp $(DEVENV)/config/.zshrc $(HOME)/.zshrc && \
+		cp $(DEVENV)/config/.zsh_plugins.txt $(HOME)/.zsh_plugins.txt && \
 		echo "Successful ZSH restore"; \
 	else \
 		echo "ZSH backup files not found"; \

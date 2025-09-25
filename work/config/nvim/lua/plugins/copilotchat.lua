@@ -25,11 +25,21 @@ return {
   },
   build = "make tiktoken", -- Only on MacOS or Linux
   opts = {
-    question_header = " User ",
-    answer_header = " Copilot ",
-    error_header = "## Error ",
+    headers = {
+      user = " User ",
+      assistant = " Copilot ",
+      tool = " Tool ",
+    },
+    -- window = {
+    --   layout = "float",
+    --   width = 80, -- Fixed width in columns
+    --   height = 20, -- Fixed height in rows
+    --   border = "rounded", -- 'single', 'double', 'rounded', 'solid'
+    --   title = "🤖 AI Assistant",
+    --   zindex = 100, -- Ensure window stays on top
+    -- },
     prompts = prompts,
-    model = "gpt-4.1",
+    model = "claude-sonnet-4",
     auto_follow_cursor = false, -- Don't follow the cursor after getting response
     show_help = false, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
     contexts = {
@@ -82,45 +92,6 @@ return {
       },
     },
   },
-  -- config = function(_, opts)
-  --   local chat = require("CopilotChat")
-  --   local select = require("CopilotChat.select")
-  --   -- -- Use unnamed register for the selection
-  --   -- opts.selection = select.unnamed
-  --   require("fzf-lua").register_ui_select()
-  --
-  --   chat.setup(opts)
-  --
-  --   -- Restore CopilotChatBuffer
-  --   vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
-  --     chat.ask(args.args, { selection = select.buffer })
-  --   end, { nargs = "*", range = true })
-  --
-  --   -- Custom buffer for CopilotChat
-  --   vim.api.nvim_create_autocmd("BufEnter", {
-  --     pattern = "copilot-*",
-  --     callback = function()
-  --       vim.opt_local.relativenumber = true
-  --       vim.opt_local.number = true
-  --
-  --       -- Get current filetype and set it to markdown if the current filetype is copilot-chat
-  --       local ft = vim.bo.filetype
-  --       if ft == "copilot-chat" then
-  --         vim.bo.filetype = "markdown"
-  --       end
-  --     end,
-  --   })
-  --
-  --   -- Add which-key mappings
-  --   local wk = require("which-key")
-  --   wk.add({
-  --     { "<leader>gm", group = "+Copilot Chat" }, -- group
-  --     { "<leader>gmd", desc = "Show diff" },
-  --     { "<leader>gmp", desc = "System prompt" },
-  --     { "<leader>gms", desc = "Show selection" },
-  --     { "<leader>gmy", desc = "Yank diff" },
-  --   })
-  -- end,
   event = "VeryLazy",
   keys = {
     -- Code related commands

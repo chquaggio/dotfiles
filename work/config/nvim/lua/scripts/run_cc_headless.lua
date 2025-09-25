@@ -1,8 +1,7 @@
 -- Usage: nvim --headless -u <your_init.lua> -l run_copilotchat_commit.lua "<output_file>"
-local outfile = arg[1] or "/tmp/copilotchat_commit.txt"
 
 -- Get staged diff
-local handle = io.popen("git -C /home/dev/astroprojects/astrodata/ diff --no-color --no-ext-diff --staged")
+local handle = io.popen("git diff --no-color --no-ext-diff --staged")
 local staged_diff = handle:read("*a")
 handle:close()
 

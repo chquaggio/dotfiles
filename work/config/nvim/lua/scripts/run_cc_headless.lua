@@ -12,12 +12,23 @@ end
 
 local chat = require("CopilotChat")
 
-local prompt = "Generate a commit message with commitzen convention, but without commit description, for the following staged changes:\n"
-  .. staged_diff
+local prompt = ([[
+You are an assistant that outputs ONLY a single conventional commit subject line.
+Rules:
+- Conventional commit format: <type>(optional scope): <subject>
+- Allowed types: feat, fix, docs, style, refactor, perf, test, chore, build, ci
+- Subject <= 72 chars, imperative mood, no trailing period.
+- NO body, NO extra explanations, NO code fences.
+
+Generate the commit subject for the following staged changes:
+
+%s
+]]):format(staged_diff)
 
 chat.ask(prompt, {
+  headless = true,
   callback = function(response)
-    print(response)
+    print(response.content)
     vim.cmd("qa!")
   end,
 })

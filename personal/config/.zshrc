@@ -17,11 +17,11 @@ source ${ZDOTDIR:-~}/.antidote/antidote.zsh
 antidote load
 
 export PATH=$PATH:/opt/nvim-linux-x86_64/bin
-export PATH=$PATH:/home/quog/.local/bin
+export PATH=$PATH:/home/quoghs/.local/bin
 
 bindkey -v
 alias vim=nvim
-alias cat=batcat
+alias cat="batcat -p"
 alias python=python3
 alias dps="docker ps"
 
@@ -54,3 +54,5 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

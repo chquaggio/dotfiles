@@ -14,7 +14,7 @@ return {
     pylsp = {
       plugins = {
         pycodestyle = {
-          ignore = { "W391", "W503" },
+          ignore = { "W391", "W503", "E302" },
           maxLineLength = 136,
         },
         -- pyflakes = {

@@ -32,7 +32,7 @@ return {
   build = "make tiktoken", -- Only on MacOS or Linux
   opts = {
     prompts = prompts,
-    model = "claude-sonnet-4",
+    model = "gpt-5.2",
     temperature = 0.1,
     auto_follow_cursor = false, -- Don't follow the cursor after getting response
     show_help = false, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat

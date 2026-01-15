@@ -1,8 +1,7 @@
 -- Usage: nvim --headless -u <your_init.lua> -l run_copilotchat_commit.lua "<output_file>"
-local outfile = arg[1] or "/tmp/copilotchat_commit.txt"
 
 -- Get staged diff
-local handle = io.popen("git -C . diff --no-color --no-ext-diff --staged")
+local handle = io.popen("git diff --no-color --no-ext-diff --staged")
 local staged_diff = handle:read("*a")
 handle:close()
 
@@ -13,12 +12,23 @@ end
 
 local chat = require("CopilotChat")
 
-local prompt = "Generate a commit message with commitzen convention, but without commit description, for the following staged changes:\n"
-  .. staged_diff
+local prompt = ([[
+You are an assistant that outputs ONLY a single conventional commit subject line.
+Rules:
+- Conventional commit format: <type>(optional scope): <subject>
+- Allowed types: feat, fix, docs, style, refactor, perf, test, chore, build, ci
+- Subject <= 72 chars, imperative mood, no trailing period.
+- NO body, NO extra explanations, NO code fences.
+
+Generate the commit subject for the following staged changes:
+
+%s
+]]):format(staged_diff)
 
 chat.ask(prompt, {
+  headless = true,
   callback = function(response)
-    print(response)
+    print(response.content)
     vim.cmd("qa!")
   end,
 })

@@ -8,8 +8,8 @@ if ok then
 end
 
 -- Configure LSP servers using built-in vim.lsp APIs (Neovim 0.11+)
-vim.lsp.config("pylsp", require("lsp.pylsp"))
-vim.lsp.enable("pylsp")
+-- LSP configuration is in lua/config/lsp.lua
+require("config.lsp")
 
 -- Setup mini.surround
 require("mini.surround").setup()

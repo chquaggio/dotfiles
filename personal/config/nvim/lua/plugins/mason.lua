@@ -5,6 +5,7 @@ return {
   },
   dependencies = {
     { "mason-org/mason.nvim", opts = {} },
-    "neovim/nvim-lspconfig",
+    -- Note: We use Neovim 0.11+ built-in vim.lsp.config() API
+    -- instead of nvim-lspconfig, so that dependency is not needed
   },
 }

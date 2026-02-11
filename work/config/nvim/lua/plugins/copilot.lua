@@ -10,7 +10,7 @@ return {
         markdown = true,
         help = true,
       },
-      copilot_model = "claude-opus-4.5",
+      copilot_model = "claude-opus-4.6",
     },
   },
   {

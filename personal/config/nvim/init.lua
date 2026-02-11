@@ -7,5 +7,9 @@ if ok then
   mason_lspconfig.setup()
 end
 
+-- Configure LSP servers using built-in vim.lsp APIs (Neovim 0.11+)
+vim.lsp.config("pylsp", require("lsp.pylsp"))
+vim.lsp.enable("pylsp")
+
 -- Setup mini.surround
 require("mini.surround").setup()

@@ -1,3 +1,17 @@
+-- Lua Language Server Configuration for Neovim 0.11+
+-- This config is loaded by lua/config/lsp.lua using vim.lsp.config()
+--
+-- The lua_ls (Lua Language Server) provides:
+-- - Neovim API completions (when properly configured)
+-- - Type checking and diagnostics
+-- - Go-to-definition for Neovim APIs
+--
+-- Install: mason will install lua_ls automatically via ensure_installed
+-- Manual install: https://luals.github.io/#neovim-install
+--
+-- Note: The on_init callback is added in lua/config/lsp.lua to provide
+-- workspace-aware configuration for better Neovim Lua development
+
 ---@brief
 ---
 --- https://github.com/luals/lua-language-server

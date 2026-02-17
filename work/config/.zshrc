@@ -13,6 +13,7 @@ export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 export PATH=$PATH:/home/dev/mybin/nvim-linux64/bin:/home/dev/.local/bin
 export PYTHONPATH=$PYTHONPATH:/home/dev/FantaQuoggio:/home/dev
 export PYTHONPATH=$PYTHONPATH:/home/dev/genai/gpa
+export OC_GITHUB_PAT=$(<~/Credentials/gh_token.txt)
 
 bindkey -v
 alias vim=nvim

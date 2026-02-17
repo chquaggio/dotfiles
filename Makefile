@@ -1,5 +1,5 @@
 SHELL := /bin/zsh
-CONFIG_DIRS := nvim lazygit
+CONFIG_DIRS := nvim lazygit opencode
 
 ifndef DEVENV
 $(error DEVENV is not set. Please run make <command> DEVENV=<env>)

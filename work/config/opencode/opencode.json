@@ -10,6 +10,31 @@
         "url": "https://api.githubcopilot.com/mcp/",
         "headers": {"Authorization": "Bearer {env:OC_GITHUB_PAT}"},
         "enabled": true
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:ctx7sk-30ef5bf8-8538-46c7-a676-4eee956f8d1a}"
+      }
     }
-	}
+	},
+  "provider": {
+    "github-copilot": {
+      "models": {
+        "claude-opus-4.5": {
+          "limit": { "context": 160000, "output": 64000 }
+        },
+        "claude-opus-4.6": {
+          "limit": { "context": 192000, "output": 64000 }
+        },
+        "claude-sonnet-4.5": {
+          "limit": { "context": 160000, "output": 64000 }
+        },
+        "claude-sonnet-4.6": {
+          "limit": { "context": 160000, "output": 64000 }
+        },
+      }
+    }
+  }
 }

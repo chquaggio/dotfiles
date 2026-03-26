@@ -24,6 +24,7 @@ return {
     { "nvim-lua/plenary.nvim" },
   },
   build = "make tiktoken", -- Only on MacOS or Linux
+  enabled = false,
   opts = {
     headers = {
       user = "👤 You",

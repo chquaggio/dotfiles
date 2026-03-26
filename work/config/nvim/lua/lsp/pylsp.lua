@@ -13,6 +13,11 @@ return {
   settings = {
     pylsp = {
       plugins = {
+        -- ruff = {
+        --   enabled = true,
+        --   formatEnabled = true,
+        --   extendIgnore = { "W391", "W503", "E302", "E501" },
+        -- },
         pycodestyle = {
           ignore = { "W391", "W503", "E302" },
           maxLineLength = 136,

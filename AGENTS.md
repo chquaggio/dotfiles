@@ -16,6 +16,10 @@ dotfiles/
 │   ├── .zshrc                # Zsh shell config
 │   └── .zsh_plugins.txt      # Antidote plugin list
 ├── work/config/              # Work environment configs (same structure)
+├── */claude/                 # Coding-agent global config (~/.claude): AGENTS.md
+│                             # (canonical cross-agent prefs), CLAUDE.md (thin
+│                             # Claude Code wrapper), OPINIONS.md, RTK.md,
+│                             # settings.json
 └── cheat_sheets/             # Reference docs (vim, tmux, aws)
 ```
 
@@ -28,14 +32,17 @@ Both `personal/` and `work/` follow the same layout. Key differences:
 All commands require `DEVENV=personal` or `DEVENV=work`:
 
 ```bash
-make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh)
+make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh, claude)
 make backup_config DEVENV=personal   # nvim/ and lazygit/ from ~/.config/
 make backup_tmux DEVENV=personal     # ~/.tmux.conf
 make backup_zsh DEVENV=personal      # ~/.zshrc and ~/.zsh_plugins.txt
+make backup_claude DEVENV=personal   # ~/.claude/ config files (CLAUDE_FILES)
 make restore DEVENV=personal         # Full restore (inverse of backup)
 make restore_config DEVENV=personal  # Restore nvim/ and lazygit/
 make restore_tmux DEVENV=personal    # Restore ~/.tmux.conf
 make restore_zsh DEVENV=personal     # Restore ~/.zshrc and plugins
+make restore_claude DEVENV=personal  # Restore ~/.claude/ + AGENTS.md symlinks
+                                     # for opencode and pi
 make help DEVENV=personal            # Show available targets
 ```
 

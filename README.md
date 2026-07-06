@@ -26,9 +26,9 @@ Below are the commands you can use:
   ```bash
   make backup
   ```
-  This command is a high-level target that invokes three other backup targets:
-  backup_config, and backup_tmux. It's utilized for performing a full
-  backup operation with just a single command.
+  This command is a high-level target that invokes the other backup targets:
+  backup_config, backup_tmux, backup_zsh, and backup_claude. It's utilized for
+  performing a full backup operation with just a single command.
 
 2. **Backup Config Listed Directories**
   ```bash
@@ -46,15 +46,25 @@ Below are the commands you can use:
   Copies your `.tmux.conf` file from your home directory to the `config`
   directory in this repository for backup.
 
+4. **Backup Coding-Agent Configuration**
+  ```bash
+  make backup_claude
+  ```
+  Copies the global coding-agent config files from `~/.claude/` (CLAUDE.md,
+  AGENTS.md, OPINIONS.md, RTK.md, settings.json) to the `claude` directory in
+  this repository. AGENTS.md is the canonical cross-agent preferences file;
+  CLAUDE.md is a thin Claude Code wrapper that imports it.
+
 ### Restore Commands
  
 1. **Restore** 
   ```bash
   make restore
   ```
-  This target allows for a full restoration operation by invoking the three
-  restore targets: restore_config, and restore_tmux. It is used to
-  restore previously backed up configuration and applications.
+  This target allows for a full restoration operation by invoking the other
+  restore targets: restore_config, restore_tmux, restore_zsh, and
+  restore_claude. It is used to restore previously backed up configuration
+  and applications.
 
 2. **Restore Config Listed Directories**
   ```bash
@@ -71,6 +81,15 @@ Below are the commands you can use:
   Restores the TMUX configuration by copying the backed-up .tmux.conf file from
   the config directory to the user's home directory, overwriting any existing
   .tmux.conf file.
+
+4. **Restore Coding-Agent Configuration**
+  ```bash
+  make restore_claude
+  ```
+  Restores the `~/.claude/` config files and re-creates the global AGENTS.md
+  symlinks for opencode (`~/.config/opencode/AGENTS.md`) and pi
+  (`~/.pi/agent/AGENTS.md`), so every coding agent picks up the same
+  preferences.
 
 ## Note
 

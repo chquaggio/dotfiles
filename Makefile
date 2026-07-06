@@ -1,5 +1,6 @@
 SHELL := /bin/zsh
 CONFIG_DIRS := nvim lazygit opencode
+CLAUDE_FILES := CLAUDE.md AGENTS.md OPINIONS.md RTK.md settings.json
 
 ifndef DEVENV
 $(error DEVENV is not set. Please run make <command> DEVENV=<env>)
@@ -16,6 +17,7 @@ backup: # Full Backup
 	$(MAKE) backup_config
 	$(MAKE) backup_tmux
 	$(MAKE) backup_zsh
+	$(MAKE) backup_claude
 
 backup_config: #Back up specified files in .config
 	@for dir in $(CONFIG_DIRS); do \
@@ -55,6 +57,7 @@ restore: # Full restore
 	$(MAKE) restore_config
 	$(MAKE) restore_tmux
 	$(MAKE) restore_zsh
+	$(MAKE) restore_claude
 
 restore_config: # Restore all /.config files
 	@for dir in $(CONFIG_DIRS); do \
@@ -67,6 +70,32 @@ restore_config: # Restore all /.config files
 		fi; \
 		done
 
+
+backup_claude: # Backup coding-agent global config (~/.claude)
+	@mkdir -p "$(DEVENV)/claude"; \
+	for file in $(CLAUDE_FILES); do \
+		if [ -f "$(HOME)/.claude/$$file" ]; then \
+			cp "$(HOME)/.claude/$$file" "$(DEVENV)/claude/$$file" && \
+			echo "Successful $$file backup"; \
+		else \
+			echo "Failed to backup $$file - file does not exist"; \
+		fi; \
+	done
+
+restore_claude: # Restore ~/.claude and re-link AGENTS.md for opencode/pi
+	@mkdir -p "$(HOME)/.claude"; \
+	for file in $(CLAUDE_FILES); do \
+		if [ -f "$(DEVENV)/claude/$$file" ]; then \
+			cp "$(DEVENV)/claude/$$file" "$(HOME)/.claude/$$file" && \
+			echo "Successful $$file restore"; \
+		else \
+			echo "Backup of $$file not found"; \
+		fi; \
+	done; \
+	mkdir -p "$(HOME)/.config/opencode" "$(HOME)/.pi/agent" && \
+	ln -sfn "$(HOME)/.claude/AGENTS.md" "$(HOME)/.config/opencode/AGENTS.md" && \
+	ln -sfn "$(HOME)/.claude/AGENTS.md" "$(HOME)/.pi/agent/AGENTS.md" && \
+	echo "Successful AGENTS.md link for opencode and pi"
 
 restore_tmux: # Restore .tmux.conf file
 	@cp -f $(DEVENV)/config/tmux.conf $(HOME)/.tmux.conf

@@ -19,6 +19,7 @@ local prompts = {
 
 return {
   "CopilotC-Nvim/CopilotChat.nvim",
+  enabled = false,
   dependencies = {
     {
       "zbirenbaum/copilot.lua",

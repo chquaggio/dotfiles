@@ -1,0 +1,71 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "llama.cpp": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama-server (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:8000/v1"
+      },
+      "models": {
+        "gpt-oss-20b": {
+          "name": "gpt-oss-20b (local)",
+          "limit": {
+            "context": 65536,
+            "output": 65536
+          }
+        },
+        "qwen3-coder-next-80b": {
+          "name": "qwen3-coder-next-80b (3bit, local)",
+          "limit": {
+            "context": 65536,
+            "output": 65536
+          }
+        },
+        "qwen3.5-27b": {
+          "name": "qwen3.5-27b (3bit, local)",
+          "limit": {
+            "context": 65536,
+            "output": 65536
+          }
+        },
+        "omnicoder-9b": {
+          "name": "omnicoder-9b (8bit, local)",
+          "limit": {
+            "context": 131072,
+            "output": 131072
+          }
+        }
+      }
+    }
+  },
+  "server": {
+    "port": 4096,
+    "hostname": "0.0.0.0"
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 2048
+  },
+  "agent": {
+    "code-reviewer": {
+      "description": "Reviews code for best practices and potential issues",
+      "mode": "subagent",
+      "prompt": "You are a senior software engineer performing a code review. Review the provided code for: Correctness and edge cases, Readability and maintainability, Performance issues, Security vulnerabilities, Test coverage gaps,Adherence to best practices. Be concise but specific. Explain why something is an issue and suggest a concrete improvement or example fix. Prioritize high-impact problems over minor style nitpicks. If the code is solid, say so and explain why.",
+      "tools": {
+        "write": false,
+        "edit": false
+      }
+    }
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    }
+  }
+}

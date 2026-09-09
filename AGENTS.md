@@ -16,10 +16,12 @@ dotfiles/
 │   ├── .zshrc                # Zsh shell config
 │   └── .zsh_plugins.txt      # Antidote plugin list
 ├── work/config/              # Work environment configs (same structure)
-├── */claude/                 # Coding-agent global config (~/.claude): AGENTS.md
-│                             # (canonical cross-agent prefs), CLAUDE.md (thin
-│                             # Claude Code wrapper), OPINIONS.md, RTK.md,
-│                             # settings.json
+├── claude/                   # Coding-agent global config, symlinked into ~/.claude
+│   ├── common/               # Shared identity: AGENTS.md (canonical cross-agent
+│   │                         # prefs), CLAUDE.md (imports it), OPINIONS.md, RTK.md,
+│   │                         # skills/, rules/ (path-scoped), hooks/, statusline.py
+│   ├── personal/             # Profile overlay: settings.json, rules/git-identity.md
+│   └── work/                 # Same shape as personal/
 └── cheat_sheets/             # Reference docs (vim, tmux, aws)
 ```
 
@@ -32,19 +34,24 @@ Both `personal/` and `work/` follow the same layout. Key differences:
 All commands require `DEVENV=personal` or `DEVENV=work`:
 
 ```bash
-make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh, claude)
+make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh)
 make backup_config DEVENV=personal   # nvim/ and lazygit/ from ~/.config/
 make backup_tmux DEVENV=personal     # ~/.tmux.conf
 make backup_zsh DEVENV=personal      # ~/.zshrc and ~/.zsh_plugins.txt
-make backup_claude DEVENV=personal   # ~/.claude/ config files (CLAUDE_FILES)
-make restore DEVENV=personal         # Full restore (inverse of backup)
+make restore DEVENV=personal         # Full restore (inverse of backup + link_claude)
 make restore_config DEVENV=personal  # Restore nvim/ and lazygit/
 make restore_tmux DEVENV=personal    # Restore ~/.tmux.conf
 make restore_zsh DEVENV=personal     # Restore ~/.zshrc and plugins
-make restore_claude DEVENV=personal  # Restore ~/.claude/ + AGENTS.md symlinks
-                                     # for opencode and pi
+make link_claude DEVENV=personal     # Symlink claude/common + claude/personal into
+                                     # ~/.claude; link AGENTS.md for opencode and pi
 make help DEVENV=personal            # Show available targets
 ```
+
+`claude/` is not backed up: the symlinks make the repo the live config, so edits show
+up in `git status`. Shared preferences go in `claude/common/`; anything that differs by
+machine (permissions, model, hooks that need a locally installed binary, git identity)
+goes in the profile directory. Never add `~/.claude.json`, `.credentials.json` or any
+file under `~/.claude/projects/` — they hold tokens and machine-local state.
 
 The Makefile uses `/bin/zsh` as its shell. There is no build step, test suite,
 or CI/CD pipeline. The `DEVENV` variable is **required** for every target.

@@ -46,14 +46,8 @@ Below are the commands you can use:
   Copies your `.tmux.conf` file from your home directory to the `config`
   directory in this repository for backup.
 
-4. **Backup Coding-Agent Configuration**
-  ```bash
-  make backup_claude
-  ```
-  Copies the global coding-agent config files from `~/.claude/` (CLAUDE.md,
-  AGENTS.md, OPINIONS.md, RTK.md, settings.json) to the `claude` directory in
-  this repository. AGENTS.md is the canonical cross-agent preferences file;
-  CLAUDE.md is a thin Claude Code wrapper that imports it.
+The coding-agent config has no backup target: `~/.claude` is symlinked to this
+repo (see `link_claude` below), so `git status` shows any drift directly.
 
 ### Restore Commands
  
@@ -82,14 +76,18 @@ Below are the commands you can use:
   the config directory to the user's home directory, overwriting any existing
   .tmux.conf file.
 
-4. **Restore Coding-Agent Configuration**
+4. **Link Coding-Agent Configuration**
   ```bash
-  make restore_claude
+  make link_claude DEVENV=personal
   ```
-  Restores the `~/.claude/` config files and re-creates the global AGENTS.md
-  symlinks for opencode (`~/.config/opencode/AGENTS.md`) and pi
-  (`~/.pi/agent/AGENTS.md`), so every coding agent picks up the same
-  preferences.
+  Symlinks every item under `claude/common/` (the shared identity: AGENTS.md,
+  CLAUDE.md, OPINIONS.md, RTK.md, skills/, rules/, hooks/, statusline.py) and then
+  `claude/<DEVENV>/` (settings.json, profile rules) into `~/.claude/`, one item at
+  a time, so Claude Code's runtime state in that directory stays local. Also links
+  `~/.claude/AGENTS.md` for opencode (`~/.config/opencode/AGENTS.md`) and pi
+  (`~/.pi/agent/AGENTS.md`), so every coding agent reads the same preferences.
+  Edits made through the symlinks (by you or by Claude Code's `/permissions`,
+  plugin toggles, …) land in the repo; commit them like any other change.
 
 ## Note
 

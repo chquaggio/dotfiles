@@ -74,10 +74,14 @@ restore_config: # Restore all /.config files
 # symlinked one by one into ~/.claude, so runtime state there (history, projects/,
 # cache/, credentials) is never touched and never enters git. Top-level entries link
 # directly; skills/, rules/ and hooks/ link their children so profile items can sit
-# next to common ones. `ln -T` refuses to nest into a real directory, so a leftover
-# non-symlink item in ~/.claude fails loudly instead of being silently shadowed.
+# next to common ones. `ln -T` refuses to overwrite a real file or directory, so a
+# leftover non-symlink in ~/.claude is reported instead of silently shadowed. Every
+# link is attempted before the report: a collision blocks only its own item, never
+# the entries that happen to sort after it or the profile layer that follows.
 link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; link AGENTS.md for opencode/pi
 	@setopt nullglob; \
+	blocked=(); \
+	link() { err=$$(ln -sfnT "$$1" "$$2" 2>&1) || blocked+=("$$2 -- $${err##*: }"); }; \
 	mkdir -p "$(CLAUDE_HOME)"; \
 	for layer in common $(DEVENV); do \
 		for src in "$(CURDIR)/claude/$$layer"/*; do \
@@ -86,15 +90,21 @@ link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; link AGE
 				skills|rules|hooks) \
 					mkdir -p "$(CLAUDE_HOME)/$$name"; \
 					for item in "$$src"/*; do \
-						ln -sfnT "$$item" "$(CLAUDE_HOME)/$$name/$$(basename "$$item")" || exit 1; \
+						link "$$item" "$(CLAUDE_HOME)/$$name/$$(basename "$$item")"; \
 					done ;; \
-				*) ln -sfnT "$$src" "$(CLAUDE_HOME)/$$name" || exit 1 ;; \
+				*) link "$$src" "$(CLAUDE_HOME)/$$name" ;; \
 			esac; \
 		done; \
 	done; \
-	mkdir -p "$(HOME)/.config/opencode" "$(HOME)/.pi/agent" && \
-	ln -sfn "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.config/opencode/AGENTS.md" && \
-	ln -sfn "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.pi/agent/AGENTS.md" && \
+	mkdir -p "$(HOME)/.config/opencode" "$(HOME)/.pi/agent"; \
+	link "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.config/opencode/AGENTS.md"; \
+	link "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.pi/agent/AGENTS.md"; \
+	if (( $${#blocked} )); then \
+		print -u2 "link_claude: $${#blocked} item(s) blocked, everything else is linked."; \
+		printf "  %s\n" "$${blocked[@]}" >&2; \
+		print -u2 "Move each aside and rerun."; \
+		exit 1; \
+	fi; \
 	echo "Linked claude/common + claude/$(DEVENV) into $(CLAUDE_HOME)"
 
 restore_tmux: # Restore .tmux.conf file

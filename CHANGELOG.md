@@ -1,3 +1,49 @@
+## [2026-09-14 11:04] Push Summary
+
+### Conversation Context
+The owner asked whether Claude was picking up the status line. It was not, for two
+reasons that shared one cause: `~/.claude/statusline.py` did not exist and
+`~/.claude/settings.json` was a real file with no `statusLine` key. `make link_claude`
+had been run and had failed silently — `~/.claude/skills/stop-slop` was a leftover real
+directory from before the repo took the config over, `ln -sfnT` refuses to overwrite a
+real directory, and the recipe's `|| exit 1` aborted the whole run there. Because
+`skills` sorts before `statusline.py` and the profile layer runs after `common`, one
+stale directory silently blocked the status line, a skill, and every `work` setting. The
+failure was reproduced against scratch directories before anything was changed, and the
+scratch result matched the real `~/.claude` exactly. The fix collects collisions and
+reports them together at the end rather than exiting at the first: the exit code stays
+non-zero, so a leftover is still loud, but it no longer takes down the entries that
+happen to sort after it. Reporting-and-continuing was chosen over checking all
+collisions up front because it keeps one linking pass and one code path.
+
+With the profile layer finally linked, `~/.claude/settings.json` became the repo file,
+which surfaced a second question: the work profile allowed `Bash(*)` under
+`defaultMode: auto`, and per the settings schema a blanket allow rule bypasses the
+auto-mode classifier unless `autoMode.classifyAllShell` is set. Nothing not named in
+`deny` was reviewed at all. Both layers were added, because they catch different things:
+literal `deny`/`ask` prefix rules are deterministic but miss a destructive command
+chained behind `&&`, while the classifier reads the whole command and catches it.
+Dropping `Bash(*)` from `allow` was considered and rejected as too much friction for now.
+`defaultMode` also arrived as `auto` rather than `plan` — Claude Code wrote it through
+the new symlink, which is the repo-is-live-config design working as intended, and it was
+kept because it reflects how the profile is actually run.
+
+### Commits
+1. `fix(claude): report every blocked link instead of stopping at the first`
+   - `Makefile`: `link_claude` collects collisions into `blocked` and reports them all at
+     the end, still exiting non-zero; each `ln` failure now blocks only its own item
+     instead of the entries sorting after it and the profile layer that follows
+2. `feat(claude): confirm or deny globally destructive actions in the work profile`
+   - `claude/work/settings.json`: `deny` rules for unrecoverable commands (root and home
+     `rm -rf`, `mkfs`, `shutdown`, mirror push) and for writes to SSH keys and Claude
+     credentials; `ask` rules for destructive-but-needed ones (`sudo`, `rm -rf`,
+     `kubectl delete`, `terraform apply`/`destroy`, `docker prune`, `git push`, package
+     publishes); `autoMode.classifyAllShell` so the classifier sees Bash commands despite
+     the `Bash(*)` allow, plus `hard_deny`/`soft_deny` entries over `$defaults`;
+     `defaultMode` recorded as `auto`
+
+---
+
 ## [2026-09-09 22:53] Push Summary
 
 ### Conversation Context

@@ -12,5 +12,4 @@ paths:
   `desc` is required.
 - Optional modules load with `pcall(require, ...)`; a failure is reported with
   `vim.notify(..., vim.log.levels.WARN)`, never swallowed.
-- Match the Neovim API level of the config being edited: `vim.uv` and
-  `vim.lsp.config()` in the personal config, `vim.loop` in the work one.
+- Both configs target current Neovim: `vim.uv`, never the deprecated `vim.loop`.

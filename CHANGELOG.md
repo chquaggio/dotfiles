@@ -1,3 +1,50 @@
+## [2026-09-29 17:22] Push Summary
+
+### Conversation Context
+The session began as a `/doctor` health check across both profiles. It found the global
+AGENTS.md loading twice in every project under the home directory: CLAUDE.md imports it,
+and Claude Code also reads `~/.claude/AGENTS.md` as project instructions, so the symlink
+duplicated about 1.5k tokens per session. The Makefile now keeps AGENTS.md out of
+`~/.claude` and links opencode and pi straight to the repo copy. The same check trimmed
+this repo's AGENTS.md to what the code cannot show, cut RTK.md to its behavioural lines,
+moved the context7 rule to the work profile (personal does not enable context7), and
+disabled work plugins with zero lifetime use: the three LSP plugins had no language
+server on PATH. Tracked Python bytecode was dropped and ignored. The owner then moves to
+a new job with a Mac, so `work/` is ported from the Linux VM to macOS on this branch,
+while `personal/` stays on Windows/WSL. The Makefile serves both machines, so it drops
+GNU-only flags instead of branching per OS; `link_claude` keeps its refusal to replace
+a real file through an explicit check, because BSD `ln` has no `-T`. SSH keys move from
+`keychain` to the macOS Keychain, lazygit gets `XDG_CONFIG_HOME` so it reads
+`~/.config` on macOS, and a Brewfile plus a README setup guide make the Mac ready to
+clone and restore. Only the Linux side was tested; the BSD behaviour is reasoned from
+the tools' documented semantics and will be confirmed on the Mac.
+
+### Commits
+1. `chore: stop tracking Python bytecode`
+   - `.gitignore`: ignore `__pycache__/`
+   - `claude/common/__pycache__/statusline.cpython-312.pyc`: removed from the index
+2. `fix(claude): load the global AGENTS.md once`
+   - `Makefile`: skip AGENTS.md when linking into `~/.claude`; opencode and pi link to the repo copy
+3. `chore(claude): scope the context7 rule to work and trim RTK.md`
+   - `claude/common/RTK.md`: reduced to the hook, `rtk proxy` and `rtk gain`
+   - `claude/work/rules/context7.md`: moved from `claude/common/rules/`
+4. `docs: trim AGENTS.md to what the repo cannot show`
+   - `AGENTS.md`: removed derivable trees, target lists, key-files table and the Lua section covered by the lua rule
+5. `chore(claude): narrow work allows, disable unused plugins and skill`
+   - `claude/work/settings.json`: dropped blanket Bash and project write allows; disabled frontend-design and the three LSP plugins; turned off the teaching-the-session skill
+6. `feat(work): port the work profile to macOS`
+   - `Makefile`: portable `grep -E`/`sed -E` in help, `cp -R` without trailing-slash sources, explicit non-symlink check in `link_claude`
+   - `work/config/.zshrc`: Apple Silicon Homebrew, `XDG_CONFIG_HOME`, `bat`, `$HOME` paths, no `keychain`
+   - `work/config/lazygit/config.yml`: `$HOME` instead of `/home/dev` in the commit-message command
+   - `work/Brewfile`: packages for the work Mac
+   - `claude/work/rules/git-identity.md`: key held by the macOS Keychain
+7. `docs: document the work Mac setup`
+   - `README.md`: rewritten around the two profiles, with a step-by-step Mac setup
+   - `AGENTS.md`: the Makefile must stay portable across GNU and BSD tools
+   - `claude/common/rules/lua.md`: both configs use `vim.uv`
+
+---
+
 ## [2026-09-14 11:04] Push Summary
 
 ### Conversation Context

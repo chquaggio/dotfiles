@@ -7,7 +7,11 @@ environments: `personal` and `work`.
 ## Environments
 
 `personal/` and `work/` share one layout but are not auto-synced: make a change
-in one environment and port it to the other by hand when needed.
+in one environment and port it to the other by hand when needed. `personal/`
+runs on Windows/WSL (GNU tools), `work/` on macOS (BSD tools). The Makefile
+serves both, so it avoids GNU-only flags: no `ln -T`, `grep -E`/`sed -E` rather
+than `\+` in basic regexes, no trailing slash on a `cp -R` source (BSD copies
+the contents instead of the directory).
 
 Every Makefile target requires `DEVENV=personal` or `DEVENV=work`; `make help
 DEVENV=...` lists them. The Makefile runs under `/bin/zsh`. There is no build

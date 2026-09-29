@@ -8,8 +8,8 @@ endif
 
 help: # Print help on Makefile
 	@echo "Usage: make [target] DEVENV=<env>"
-	@grep '^[^.#]\+:\s\+.*#' Makefile | \
-	sed "s/\(.\+\):\s*\(.*\) #\s*\(.*\)/`printf "\033[93m"`\1`printf "\033[0m"`	\3 [\2]/" | \
+	@grep -E '^[^.#]+:[[:space:]]+.*#' Makefile | \
+	sed -E "s/(.+):[[:space:]]*(.*) #[[:space:]]*(.*)/`printf "\033[93m"`\1`printf "\033[0m"`	\3 [\2]/" | \
 	expand -t20
 
 
@@ -24,7 +24,7 @@ backup_config: #Back up specified files in .config
 		if [ -d "$(HOME)/.config/$$dir" ]; then \
 			echo "Backing up $$dir..."; \
 			rm -rf "$(DEVENV)/config/$$dir/" && \
-			cp -r "$(HOME)/.config/$$dir/" "$(DEVENV)/config/$$dir/" && \
+			cp -R "$(HOME)/.config/$$dir" "$(DEVENV)/config/$$dir" && \
 			echo "Successful $$dir backup"; \
 		else \
 			echo "Failed to backup $$dir - directory does not exist"; \
@@ -62,7 +62,7 @@ restore_config: # Restore all /.config files
 	@for dir in $(CONFIG_DIRS); do \
 		if [ -d "$(DEVENV)/config/$$dir" ]; then \
 			echo "Restoring $$dir..."; \
-			cp -rf "$(DEVENV)/config/$$dir/" "$(HOME)/.config/" && \
+			cp -Rf "$(DEVENV)/config/$$dir" "$(HOME)/.config/" && \
 			echo "Successful restore of $$dir"; \
 		else \
 			echo "Backup of $$dir not found"; \
@@ -74,8 +74,8 @@ restore_config: # Restore all /.config files
 # symlinked one by one into ~/.claude, so runtime state there (history, projects/,
 # cache/, credentials) is never touched and never enters git. Top-level entries link
 # directly; skills/, rules/ and hooks/ link their children so profile items can sit
-# next to common ones. `ln -T` refuses to overwrite a real file or directory, so a
-# leftover non-symlink in ~/.claude is reported instead of silently shadowed. Every
+# next to common ones. A leftover non-symlink in ~/.claude is reported instead of
+# replaced or shadowed (the explicit check, since BSD ln on macOS has no -T). Every
 # link is attempted before the report: a collision blocks only its own item, never
 # the entries that happen to sort after it or the profile layer that follows.
 # AGENTS.md stays out of ~/.claude: CLAUDE.md already imports it, and Claude Code also
@@ -83,7 +83,10 @@ restore_config: # Restore all /.config files
 link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; link AGENTS.md for opencode/pi
 	@setopt nullglob; \
 	blocked=(); \
-	link() { err=$$(ln -sfnT "$$1" "$$2" 2>&1) || blocked+=("$$2 -- $${err##*: }"); }; \
+	link() { \
+		if [[ -e "$$2" && ! -L "$$2" ]]; then blocked+=("$$2 -- not a symlink"); \
+		elif ! err=$$(ln -sfn "$$1" "$$2" 2>&1); then blocked+=("$$2 -- $${err##*: }"); fi; \
+	}; \
 	mkdir -p "$(CLAUDE_HOME)"; \
 	for layer in common $(DEVENV); do \
 		for src in "$(CURDIR)/claude/$$layer"/*; do \

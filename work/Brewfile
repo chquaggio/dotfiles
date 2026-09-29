@@ -1,0 +1,19 @@
+# Work Mac packages: `brew bundle --file=work/Brewfile`
+tap "anomalyco/tap"
+
+brew "git"
+brew "gh"
+brew "neovim"
+brew "tmux"
+brew "lazygit"
+brew "bat"
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "jq"
+brew "uv"
+brew "rtk"
+brew "tree-sitter-cli"
+brew "anomalyco/tap/opencode"
+
+cask "font-jetbrains-mono-nerd-font"

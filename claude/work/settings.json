@@ -1,44 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(*)",
-      "Read(*)",
-      "Write(/home/dev/Allianz/allianz_migration/outputs/**)",
-      "Edit(/home/dev/Allianz/allianz_migration/outputs/**)",
-      "Write(/home/dev/Allianz/allianz_migration/.claude/**)",
-      "Edit(/home/dev/Allianz/allianz_migration/.claude/**)",
-      "Write(/home/dev/Allianz/allianz_migration/CLAUDE.md)",
-      "Edit(/home/dev/Allianz/allianz_migration/CLAUDE.md)",
-      "Write(/home/dev/Allianz/allianz_migration/CHANGELOG.md)",
-      "Edit(/home/dev/Allianz/allianz_migration/CHANGELOG.md)"
-    ],
-    "ask": [
-      "Bash(sudo *)",
-      "Bash(rm -rf *)",
-      "Bash(rm -fr *)",
-      "Bash(dd *)",
-      "Bash(chmod -R *)",
-      "Bash(chown -R *)",
-      "Bash(killall*)",
-      "Bash(pkill*)",
-      "Bash(systemctl*)",
-      "Bash(crontab*)",
-      "Bash(git push*)",
-      "Bash(docker system prune*)",
-      "Bash(docker volume rm*)",
-      "Bash(docker rm -f*)",
-      "Bash(kubectl delete*)",
-      "Bash(helm uninstall*)",
-      "Bash(helm delete*)",
-      "Bash(terraform apply*)",
-      "Bash(terraform destroy*)",
-      "Bash(gh repo delete*)",
-      "Bash(gh release delete*)",
-      "Bash(npm publish*)",
-      "Bash(uv publish*)",
-      "Bash(twine upload*)",
-      "Write(/etc/**)",
-      "Edit(/etc/**)"
+      "Read(*)"
     ],
     "deny": [
       "Bash(git push* --force*)",
@@ -69,9 +32,37 @@
       "Write(~/.claude/.credentials.json)",
       "Edit(~/.claude/.credentials.json)"
     ],
+    "ask": [
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(dd *)",
+      "Bash(chmod -R *)",
+      "Bash(chown -R *)",
+      "Bash(killall*)",
+      "Bash(pkill*)",
+      "Bash(systemctl*)",
+      "Bash(crontab*)",
+      "Bash(git push*)",
+      "Bash(docker system prune*)",
+      "Bash(docker volume rm*)",
+      "Bash(docker rm -f*)",
+      "Bash(kubectl delete*)",
+      "Bash(helm uninstall*)",
+      "Bash(helm delete*)",
+      "Bash(terraform apply*)",
+      "Bash(terraform destroy*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh release delete*)",
+      "Bash(npm publish*)",
+      "Bash(uv publish*)",
+      "Bash(twine upload*)",
+      "Write(/etc/**)",
+      "Edit(/etc/**)"
+    ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -101,11 +92,11 @@
     "command": "~/.claude/statusline.py"
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": false,
+    "pyright-lsp@claude-plugins-official": false,
+    "lua-lsp@claude-plugins-official": false,
     "context7@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
@@ -121,18 +112,47 @@
   "remoteControlAtStartup": false,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
-    "classifyAllShell": true,
-    "hard_deny": [
-      "$defaults",
-      "Reading or exfiltrating SSH private keys, Claude credentials, or .env secrets",
-      "Disabling, weakening, or editing these permission rules or the auto-mode classifier config"
-    ],
     "soft_deny": [
       "$defaults",
       "Deleting or overwriting files outside the current working directory",
       "Rewriting published git history, or any push that is not a fast-forward",
       "Destroying or recreating remote infrastructure, containers, volumes, or cluster resources",
       "Publishing a package, release, or artifact to a public registry"
-    ]
+    ],
+    "hard_deny": [
+      "$defaults",
+      "Reading or exfiltrating SSH private keys, Claude credentials, or .env secrets",
+      "Disabling, weakening, or editing these permission rules or the auto-mode classifier config"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: assume private unless the remote host and repo name indicate otherwise, or a visibility check in the transcript shows public (gh visibility check was not queryable here)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: not queryable here (origin/HEAD unset, gh checks not queryable) — treat all branches on origin/alkemyspa/ctc_sic as unverified for protection status",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine or CI runner with open internet",
+      "**Source control**: The trusted repo (github.com:alkemyspa/ctc_sic.git) and its remote(s) only (no additional orgs configured)",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development",
+      "**Trusted repo**: /home/dev/ctc_sic (working directory) and its remote github.com:alkemyspa/ctc_sic.git; visibility unconfirmed — treat as private until verified",
+      "**Org-specific CLIs**: None configured (uv and rtk observed as routine tooling in this repo's transcripts, but these are general-purpose/project tools, not org-specific)"
+    ],
+    "classifyAllShell": true
+  },
+  "skillOverrides": {
+    "teaching-the-session": "off"
   }
 }

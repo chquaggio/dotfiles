@@ -78,6 +78,8 @@ restore_config: # Restore all /.config files
 # leftover non-symlink in ~/.claude is reported instead of silently shadowed. Every
 # link is attempted before the report: a collision blocks only its own item, never
 # the entries that happen to sort after it or the profile layer that follows.
+# AGENTS.md stays out of ~/.claude: CLAUDE.md already imports it, and Claude Code also
+# loads ~/.claude/AGENTS.md as project instructions under ~, so a link loads it twice.
 link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; link AGENTS.md for opencode/pi
 	@setopt nullglob; \
 	blocked=(); \
@@ -92,13 +94,14 @@ link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; link AGE
 					for item in "$$src"/*; do \
 						link "$$item" "$(CLAUDE_HOME)/$$name/$$(basename "$$item")"; \
 					done ;; \
+				AGENTS.md) ;; \
 				*) link "$$src" "$(CLAUDE_HOME)/$$name" ;; \
 			esac; \
 		done; \
 	done; \
 	mkdir -p "$(HOME)/.config/opencode" "$(HOME)/.pi/agent"; \
-	link "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.config/opencode/AGENTS.md"; \
-	link "$(CLAUDE_HOME)/AGENTS.md" "$(HOME)/.pi/agent/AGENTS.md"; \
+	link "$(CURDIR)/claude/common/AGENTS.md" "$(HOME)/.config/opencode/AGENTS.md"; \
+	link "$(CURDIR)/claude/common/AGENTS.md" "$(HOME)/.pi/agent/AGENTS.md"; \
 	if (( $${#blocked} )); then \
 		print -u2 "link_claude: $${#blocked} item(s) blocked, everything else is linked."; \
 		printf "  %s\n" "$${blocked[@]}" >&2; \

@@ -13,6 +13,10 @@ antidote load
 # Location of this repo, used by cheat()
 export DOTFILES="${DOTFILES:-$HOME/work/dotfiles}"
 
+# New terminals open in $HOME: start in ~/work instead. Shells started anywhere else
+# (a tmux pane, an editor's terminal) keep their directory.
+[[ $PWD == $HOME && -d $HOME/work ]] && cd $HOME/work
+
 # Secrets from the login Keychain; stays silent when an entry is missing.
 # Store one once with: security add-generic-password -a "$USER" -s OC_GITHUB_PAT -w
 () {

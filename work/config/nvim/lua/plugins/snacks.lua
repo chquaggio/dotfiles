@@ -23,6 +23,8 @@ return {
         {
           section = "terminal",
           cmd = "pokemon-colorscripts -r 1-6 --no-title; sleep .3",
+          -- not in Homebrew: show the section only where it is installed
+          enabled = vim.fn.executable("pokemon-colorscripts") == 1,
           padding = 1,
           pane = 2,
           indent = 4,

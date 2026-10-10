@@ -1,103 +1,119 @@
-# Dotfiles README
+# Dotfiles
 
-Welcome to my personalized dotfiles repository. It contains your configurations for `Neovim` and `tmux`, as well as a list of `brew` applications I use.
+Configs for zsh, tmux, Neovim (LazyVim), lazygit, opencode and the coding agents
+(Claude Code, opencode, pi), in two profiles picked with `DEVENV=<profile>`:
+
+- `work/`: macOS on Apple Silicon (Homebrew in `/opt/homebrew`).
+- `personal/`: Ubuntu under WSL.
 
 ## Structure
 
-Here is the basic structure of the repository:
-
 ```
 .
-├── Makefile
-├── README.md
-└── config
-    ├── nvim
-    └── tmux.conf
+├── Brewfile              # every tool the configs depend on (macOS)
+├── Makefile              # restore / backup / link targets
+├── work/config/          # .zprofile, .zshrc, .zsh_plugins.txt, tmux.conf,
+│                         # nvim/, lazygit/, opencode/
+├── personal/config/      # same layout, no .zprofile
+├── claude/               # coding-agent config, symlinked into ~/.claude
+│   ├── common/           # shared: AGENTS.md, CLAUDE.md, skills/, rules/, hooks/, ...
+│   ├── work/             # settings.json, rules/git-identity.md
+│   └── personal/
+└── cheat_sheets/         # searched by the `cheat` shell function
 ```
 
-## How to Use
+## New Mac setup (work profile)
 
-This repository leverages a `Makefile` for various backup and setup tasks. 
-Below are the commands you can use:
+The repo is expected at `~/work/dotfiles` (`cheat` uses `$DOTFILES`, which defaults
+to that path).
 
-### Backup
+```bash
+make brew                        # brew bundle --file=Brewfile
+make restore DEVENV=work         # symlinks + copies, see below
+uv python install 3.13 --default # python/python3 in ~/.local/bin (Apple's is 3.9)
+fnm install --lts                # Node for copilot.lua and Mason LSPs
+make docker_plugins              # only if you use docker compose/buildx
+```
 
-1. **Backup**
-  ```bash
-  make backup
-  ```
-  This command is a high-level target that invokes the other backup targets:
-  backup_config, backup_tmux, backup_zsh, and backup_claude. It's utilized for
-  performing a full backup operation with just a single command.
+Then open a new terminal (Ghostty), start tmux and press `prefix + I` to fetch the
+tmux plugins.
 
-2. **Backup Config Listed Directories**
-  ```bash
-  make backup_config
-  ```
-  This target iterates over directories specified in the variable CONFIG_DIRS,
-  checks if these directories exist in the user's .config directory, backs them up
-  by copying to a config directory within the current project, and reports the
-  success or failure of each backup operation.
+### GitHub token for opencode (Keychain)
 
-3. **Backup TMUX Configuration**
-  ```bash
-  make backup_tmux
-  ```
-  Copies your `.tmux.conf` file from your home directory to the `config`
-  directory in this repository for backup.
+`.zshrc` exports `OC_GITHUB_PAT` from the login Keychain, and stays silent when
+the entry is missing. Store it once (the `-w` with no value prompts for it, so the
+token stays out of shell history):
 
-The coding-agent config has no backup target: `~/.claude` is symlinked to this
-repo (see `link_claude` below), so `git status` shows any drift directly.
+```bash
+security add-generic-password -a "$USER" -s OC_GITHUB_PAT -w
+```
 
-### Restore Commands
- 
-1. **Restore** 
-  ```bash
-  make restore
-  ```
-  This target allows for a full restoration operation by invoking the other
-  restore targets: restore_config, restore_tmux, restore_zsh, and
-  restore_claude. It is used to restore previously backed up configuration
-  and applications.
+### SSH
 
-2. **Restore Config Listed Directories**
-  ```bash
-  make restore_config
-  ```
-  Iterates through the directories within the config directory and restores them
-  into the user's .config directory, reporting the success or failure of each
-  operation.
+macOS launchd already provides `SSH_AUTH_SOCK`, so the shell starts no agent. Let
+the Keychain hold the key passphrase with this in `~/.ssh/config` (not versioned):
 
-3. **Restore TMUX Configuration**
-  ```bash
-  make restore_tmux
-  ```
-  Restores the TMUX configuration by copying the backed-up .tmux.conf file from
-  the config directory to the user's home directory, overwriting any existing
-  .tmux.conf file.
+```
+Host *
+  UseKeychain yes
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/id_ed25519
+```
 
-4. **Link Coding-Agent Configuration**
-  ```bash
-  make link_claude DEVENV=personal
-  ```
-  Symlinks every item under `claude/common/` (the shared identity: AGENTS.md,
-  CLAUDE.md, OPINIONS.md, RTK.md, skills/, rules/, hooks/, statusline.py) and then
-  `claude/<DEVENV>/` (settings.json, profile rules) into `~/.claude/`, one item at
-  a time, so Claude Code's runtime state in that directory stays local. Also links
-  `~/.claude/AGENTS.md` for opencode (`~/.config/opencode/AGENTS.md`) and pi
-  (`~/.pi/agent/AGENTS.md`), so every coding agent reads the same preferences.
-  Edits made through the symlinks (by you or by Claude Code's `/permissions`,
-  plugin toggles, …) land in the repo; commit them like any other change.
+and add the key once with `ssh-add --apple-use-keychain ~/.ssh/id_ed25519`.
 
-## Note
+### Docker (Colima)
 
-- It is important to periodically update the backup files in this repository to
-  keep your configurations and brew packages list up to date.
-- Any custom changes or additional configurations you wish to backup should be
-  manually added to the appropriate directories or files.
+The Docker daemon comes from Colima (`colima start`). Homebrew's `docker-compose`
+and `docker-buildx` are CLI plugins, and the docker CLI only finds them through
+`"cliPluginsExtraDirs": ["/opt/homebrew/lib/docker/cli-plugins"]` in
+`~/.docker/config.json`. That file can hold registry credentials, so it is **not**
+versioned: `make docker_plugins` merges that single key in with `jq` and leaves the
+rest of the file untouched.
 
-## Contributing
+### Touch ID for sudo inside tmux (optional)
 
-Feel free to fork this repository and adapt the make commands and configurations
-to suit your personal setup needs. Contributions and improvements to the script
-are welcome.
+`pam-reattach` is in the Brewfile. Enabling it is a manual system change: create
+`/etc/pam.d/sudo_local` with
+
+```
+auth       optional       /opt/homebrew/lib/pam/pam_reattach.so
+auth       sufficient     pam_tid.so
+```
+
+## Makefile targets
+
+`help`, `brew` and `docker_plugins` run without `DEVENV`; every other target
+needs `DEVENV=work` or `DEVENV=personal`.
+
+| Target | What it does |
+|---|---|
+| `help` | List the targets (also the default) |
+| `brew` | `brew bundle` the Brewfile; fails clearly if `brew` is missing |
+| `docker_plugins` | Merge `cliPluginsExtraDirs` into `~/.docker/config.json` |
+| `restore` | `restore_config` + `restore_tmux` + `restore_zsh` + `link_claude` |
+| `restore_config` | Symlink `nvim/`, `lazygit/`, `opencode/` into `~/.config` |
+| `restore_tmux` | Copy `tmux.conf` to `~/.tmux.conf`; clone TPM if missing |
+| `restore_zsh` | Copy `.zshrc`, `.zsh_plugins.txt` and, if the profile has one, `.zprofile` |
+| `link_claude` | Symlink `claude/common` + `claude/<DEVENV>` into `~/.claude`; link `AGENTS.md` for opencode and pi |
+| `backup` | `backup_config` + `backup_tmux` + `backup_zsh` |
+| `backup_config` | Copy back `~/.config` dirs that are real directories; symlinked ones are skipped |
+| `backup_tmux`, `backup_zsh` | Copy the home files back into the profile |
+
+### Symlinks instead of copies
+
+`restore_config` and `link_claude` make the repo the live config: edits made in
+Neovim, lazygit, Claude Code (`/permissions`, plugin toggles) or by `:Lazy update`
+land in the repo and show up in `git status`. Commit them like any other change.
+
+Both targets refuse to overwrite a real file or directory. Each one that is in the
+way is reported as blocked, every other link is still made, and the target exits
+non-zero. Move the blocked items aside and rerun. Reruns are idempotent.
+
+### `.zprofile` and `.zshrc`
+
+- `.zprofile` (login shells): `brew shellenv`, `XDG_CONFIG_HOME=~/.config` (without
+  it lazygit on macOS reads `~/Library/Application Support/lazygit`), and
+  `~/.local/bin` first on `PATH`.
+- `.zshrc` (interactive): antidote plugins, aliases, `cheat`, the Keychain secret,
+  and fnm (falls back to nvm only when fnm is missing).

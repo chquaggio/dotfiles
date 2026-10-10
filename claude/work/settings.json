@@ -2,15 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "Read(*)",
-      "Write(/home/dev/Allianz/allianz_migration/outputs/**)",
-      "Edit(/home/dev/Allianz/allianz_migration/outputs/**)",
-      "Write(/home/dev/Allianz/allianz_migration/.claude/**)",
-      "Edit(/home/dev/Allianz/allianz_migration/.claude/**)",
-      "Write(/home/dev/Allianz/allianz_migration/CLAUDE.md)",
-      "Edit(/home/dev/Allianz/allianz_migration/CLAUDE.md)",
-      "Write(/home/dev/Allianz/allianz_migration/CHANGELOG.md)",
-      "Edit(/home/dev/Allianz/allianz_migration/CHANGELOG.md)"
+      "Read(*)"
     ],
     "ask": [
       "Bash(sudo *)",

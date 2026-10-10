@@ -35,8 +35,18 @@ fnm install --lts                # Node for copilot.lua and Mason LSPs
 make docker_plugins              # only if you use docker compose/buildx
 ```
 
-Then open a new terminal (Ghostty), start tmux and press `prefix + I` to fetch the
-tmux plugins.
+Then open **Ghostty** (not Terminal.app: its font has no Nerd Font glyphs, so
+LazyVim's icons show as `?` boxes; Ghostty bundles the Nerd Font symbols), start
+tmux and press `prefix + I` to fetch the tmux plugins.
+
+Start `nvim` once so lazy.nvim installs the plugins and builds hererocks, then
+quit and run this one-time fix for rest.nvim (see the header of
+`work/config/nvim/lua/plugins/rest.lua`):
+
+```bash
+~/.local/share/nvim/lazy-rocks/hererocks/bin/luarocks install luarocks-build-treesitter-parser
+nvim --headless "+Lazy! build rest.nvim" +qa
+```
 
 ### GitHub token for opencode (Keychain)
 

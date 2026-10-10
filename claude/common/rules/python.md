@@ -8,9 +8,12 @@ paths:
 
 - `uv` runs everything: `uv run <cmd>`, `uv add`, `uv lock`. No `pip`, no bare
   `python`; a missing tool is added with `uv add --dev`.
-- Python 3.12+ syntax: `X | None`, builtin generics (`list[str]`), `type` aliases,
-  `match` where it reads better than an `if` chain. Nothing from `typing` that has a
-  builtin equivalent.
+- Target the Python version the project pins (`.python-version`, `requires-python`,
+  or the Dockerfile's `FROM python:X.Y`), never the local interpreter: no syntax or
+  stdlib API newer than that version. Unpinned project → ask before assuming one.
+  Within that: `X | None`, builtin generics (`list[str]`), `type` aliases, `match`
+  where it reads better than an `if` chain; nothing from `typing` that has a builtin
+  equivalent.
 - ruff formats and lints. Before claiming done: `uv run ruff check --fix . && uv run
   ruff format .`; run `uv run mypy` too when the project configures it.
 - Tests: pytest, `asyncio_mode = auto` — async tests are plain `async def test_*`.

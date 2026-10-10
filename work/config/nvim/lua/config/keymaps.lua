@@ -3,4 +3,3 @@
 
 vim.keymap.set("n", "ù", "<CMD>lua require('FTerm').toggle()<CR>", { noremap = true, silent = true })
 vim.keymap.set("t", "ù", "<C-\\><C-n><CMD>lua require('FTerm').toggle()<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>rr", "<cmd>lua require('kulala').run()<CR>", { noremap = true, silent = true })

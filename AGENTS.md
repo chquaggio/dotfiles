@@ -30,7 +30,7 @@ dotfiles/
 Both `personal/` and `work/` follow the same layout. Key differences:
 - **personal**: Powerlevel10k, WSL clipboard, lua_ls + pylsp, neo-tree
 - **work**: macOS only. robbyrussell theme, launchd ssh-agent + Keychain, secrets from
-  the login Keychain (`security find-generic-password`), fnm, pylsp only, codeium, kulala.
+  the login Keychain (`security find-generic-password`), fnm, pylsp only, codeium, rest.nvim.
   No Linux branches and no hardcoded `/home/...` paths: use `$HOME`/`~`.
 
 ## Build / Backup / Restore Commands

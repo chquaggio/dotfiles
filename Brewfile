@@ -50,12 +50,12 @@ cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"   # icone di Powerlevel10k, devicons, neo-tree
 
 # ---------- App: dalla pagina "Setup Macbook" ----------
-cask "visual-studio-code"
+# cask "visual-studio-code"
 cask "dbeaver-community"
 cask "figma"
 cask "todoist-app"
 cask "rocket-chat"
-cask "google-chrome"
+# cask "google-chrome"
 cask "google-drive"
 cask "alt-tab"
 # FortiClient VPN: nessun cask, va scaricato da fortinet.com

@@ -4,34 +4,6 @@
       "Bash(*)",
       "Read(*)"
     ],
-    "ask": [
-      "Bash(sudo *)",
-      "Bash(rm -rf *)",
-      "Bash(rm -fr *)",
-      "Bash(dd *)",
-      "Bash(chmod -R *)",
-      "Bash(chown -R *)",
-      "Bash(killall*)",
-      "Bash(pkill*)",
-      "Bash(systemctl*)",
-      "Bash(crontab*)",
-      "Bash(git push*)",
-      "Bash(docker system prune*)",
-      "Bash(docker volume rm*)",
-      "Bash(docker rm -f*)",
-      "Bash(kubectl delete*)",
-      "Bash(helm uninstall*)",
-      "Bash(helm delete*)",
-      "Bash(terraform apply*)",
-      "Bash(terraform destroy*)",
-      "Bash(gh repo delete*)",
-      "Bash(gh release delete*)",
-      "Bash(npm publish*)",
-      "Bash(uv publish*)",
-      "Bash(twine upload*)",
-      "Write(/etc/**)",
-      "Edit(/etc/**)"
-    ],
     "deny": [
       "Bash(git push* --force*)",
       "Bash(git push* -f *)",
@@ -60,6 +32,34 @@
       "Edit(~/.ssh/**)",
       "Write(~/.claude/.credentials.json)",
       "Edit(~/.claude/.credentials.json)"
+    ],
+    "ask": [
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(dd *)",
+      "Bash(chmod -R *)",
+      "Bash(chown -R *)",
+      "Bash(killall*)",
+      "Bash(pkill*)",
+      "Bash(systemctl*)",
+      "Bash(crontab*)",
+      "Bash(git push*)",
+      "Bash(docker system prune*)",
+      "Bash(docker volume rm*)",
+      "Bash(docker rm -f*)",
+      "Bash(kubectl delete*)",
+      "Bash(helm uninstall*)",
+      "Bash(helm delete*)",
+      "Bash(terraform apply*)",
+      "Bash(terraform destroy*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh release delete*)",
+      "Bash(npm publish*)",
+      "Bash(uv publish*)",
+      "Bash(twine upload*)",
+      "Write(/etc/**)",
+      "Edit(/etc/**)"
     ],
     "defaultMode": "auto"
   },
@@ -110,21 +110,22 @@
   },
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
+  "theme": "dark",
   "remoteControlAtStartup": false,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
-    "classifyAllShell": true,
-    "hard_deny": [
-      "$defaults",
-      "Reading or exfiltrating SSH private keys, Claude credentials, or .env secrets",
-      "Disabling, weakening, or editing these permission rules or the auto-mode classifier config"
-    ],
     "soft_deny": [
       "$defaults",
       "Deleting or overwriting files outside the current working directory",
       "Rewriting published git history, or any push that is not a fast-forward",
       "Destroying or recreating remote infrastructure, containers, volumes, or cluster resources",
       "Publishing a package, release, or artifact to a public registry"
-    ]
+    ],
+    "hard_deny": [
+      "$defaults",
+      "Reading or exfiltrating SSH private keys, Claude credentials, or .env secrets",
+      "Disabling, weakening, or editing these permission rules or the auto-mode classifier config"
+    ],
+    "classifyAllShell": true
   }
 }

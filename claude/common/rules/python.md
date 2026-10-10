@@ -14,6 +14,14 @@ paths:
   Within that: `X | None`, builtin generics (`list[str]`), `type` aliases, `match`
   where it reads better than an `if` chain; nothing from `typing` that has a builtin
   equivalent.
+- 3.15+ projects: imports stay at module top. One that is heavy or needed on few
+  paths becomes `lazy import x` / `lazy from x import y` (PEP 810) instead of an
+  import inside a function. `lazy` is allowed only at module scope and outside
+  `try`, so an optional dependency stays an eager `try: import` at the top; a lazy
+  import's errors surface at first use, not at startup.
+- 3.15+ projects: flatten with unpacking in comprehensions (PEP 798),
+  `[*xs for xs in groups]`, `{**d for d in ds}`, over a nested `for` or
+  `itertools.chain`.
 - ruff formats and lints. Before claiming done: `uv run ruff check --fix . && uv run
   ruff format .`; run `uv run mypy` too when the project configures it.
 - Tests: pytest, `asyncio_mode = auto` — async tests are plain `async def test_*`.

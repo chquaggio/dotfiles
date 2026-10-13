@@ -1,3 +1,51 @@
+## [2026-10-13 16:08] Push Summary
+
+### Conversation Context
+This push finishes the work profile's move from WSL to a MacBook Pro (Apple Silicon),
+done in one session; the port commits themselves were pushed earlier by the owner. The
+snacks dashboard showed the same pokemon on every start and cut tall sprites: snacks
+caches a terminal section's output for an hour per working directory, and the section
+had a fixed 17-line height while gen 1-6 sprites run from 7 to 26 lines. A fixed 26
+lines fixed the cut but left empty rows, so the config now picks the pokemon itself and
+sizes the section to that sprite. The same change hides "[Process exited 0]", which
+Neovim 0.12 draws as virtual text that snacks' own hiding no longer finds.
+
+The owner asked for a statusline closer to tokyonight. Three styles were mocked up
+(LazyVim stock, slanted powerline, bubbles); the stock one won because both bars then
+come from tokyonight itself: lualine, which copilot.lua had switched off, is back, and
+tmux sources the theme file tokyonight.nvim ships instead of nord-tmux, which had never
+been installed on the Mac. Claude Code then warned that the work profile's Write()
+permission rules never match, since file paths are checked only against Edit() rules;
+each had an Edit() twin, so they were removed with no change in protection.
+
+Asked whether the Makefile's readability mattered, the review found shell logic buried
+in recipes, a report block written twice, backup targets that printed "Failed" and
+exited 0, and two install models side by side (symlinks for ~/.config and ~/.claude,
+copies for the home dotfiles). The owner agreed to symlink everything: the linking
+logic moved to scripts/link.zsh, the backup targets went, and the Makefile became a
+dispatcher. Mac and WSL each link their own clone and profile, so tools on one machine
+write only that profile's files; claude/common is the one shared layer. docker_plugins
+became macOS-only, since Linux docker packages already put compose and buildx where
+the CLI looks.
+
+### Commits
+1. `fix(work): size dashboard pokemon to its sprite and hide the exit message`
+   - `work/config/nvim/lua/plugins/snacks.lua`: pick a random gen 1-6 sprite in Lua, `cat` it at its own height, `ttl = 0`, clear the exit-message extmark
+2. `refactor(make): symlink every config through scripts/link.zsh`
+   - `scripts/link.zsh`: new; links config, home and claude groups, reports blocked items, never overwrites real files
+   - `Makefile`: dispatcher with `.PHONY`; `restore`, `link_config`, `link_home`, `link_claude`, `tpm`; backup targets removed; `docker_plugins` macOS-only
+   - `README.md`: new target table, "the repo is the live config", Mac/WSL sync
+   - `AGENTS.md`: new targets and where the linking logic lives
+3. `fix(claude): drop Write() permission rules that never match`
+   - `claude/work/settings.json`: remove three Write() rules covered by Edit() twins; model set to opus via /model
+4. `feat(work): tokyonight statusline in nvim and tmux`
+   - `work/config/nvim/lua/plugins/copilot.lua`: stop disabling lualine
+   - `work/config/tmux.conf`: tokyonight moon theme from tokyonight.nvim, tmux-prefix-highlight, 24h clock; nord-tmux removed
+5. `chore(work): update neovim plugins`
+   - `work/config/nvim/lazy-lock.json`: plugin versions from the owner's `:Lazy update`
+
+---
+
 ## [2026-09-14 11:04] Push Summary
 
 ### Conversation Context

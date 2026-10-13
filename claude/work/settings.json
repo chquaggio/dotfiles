@@ -28,9 +28,7 @@
       "Bash(halt*)",
       "Bash(chmod -R 777 /*)",
       "Bash(git push* --mirror*)",
-      "Write(~/.ssh/**)",
       "Edit(~/.ssh/**)",
-      "Write(~/.claude/.credentials.json)",
       "Edit(~/.claude/.credentials.json)"
     ],
     "ask": [
@@ -58,12 +56,11 @@
       "Bash(npm publish*)",
       "Bash(uv publish*)",
       "Bash(twine upload*)",
-      "Write(/etc/**)",
       "Edit(/etc/**)"
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {

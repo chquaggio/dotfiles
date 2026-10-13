@@ -35,33 +35,29 @@ Both `personal/` and `work/` follow the same layout. Key differences:
 
 ## Build / Backup / Restore Commands
 
-`help`, `brew` and `docker_plugins` run without `DEVENV`; every other target requires
-`DEVENV=personal` or `DEVENV=work`:
+`help`, `brew`, `docker_plugins` and `tpm` run without `DEVENV`; every other target
+requires `DEVENV=personal` or `DEVENV=work`:
 
 ```bash
 make help                            # Show available targets (default goal)
 make brew                            # brew bundle --file=Brewfile
-make docker_plugins                  # Merge cliPluginsExtraDirs into ~/.docker/config.json
-make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh)
-make backup_config DEVENV=personal   # Copy back ~/.config dirs that are NOT symlinks
-make backup_tmux DEVENV=personal     # ~/.tmux.conf
-make backup_zsh DEVENV=personal      # ~/.zshrc, ~/.zsh_plugins.txt (+ .zprofile if versioned)
-make restore DEVENV=personal         # restore_config + restore_tmux + restore_zsh + link_claude
-make restore_config DEVENV=personal  # Symlink nvim/, lazygit/, opencode/ into ~/.config
-make restore_tmux DEVENV=personal    # Copy ~/.tmux.conf; clone TPM if missing
-make restore_zsh DEVENV=personal     # Copy ~/.zshrc, plugins (+ .zprofile if versioned)
+make docker_plugins                  # macOS: merge cliPluginsExtraDirs into ~/.docker/config.json
+make tpm                             # Clone TPM if missing
+make restore DEVENV=personal         # tpm + link_config + link_home + link_claude
+make link_config DEVENV=personal     # Symlink nvim/, lazygit/, opencode/ into ~/.config
+make link_home DEVENV=personal       # Symlink .zshrc, .zprofile, .zsh_plugins.txt, tmux.conf into $HOME
 make link_claude DEVENV=personal     # Symlink claude/common + claude/personal into
                                      # ~/.claude; link AGENTS.md for opencode and pi
 ```
 
-The Makefile must run on both BSD (macOS) and GNU userland: no `ln -T`, no GNU regex
-(`\+`, `\s`), no trailing slash on a `cp -R` source. `restore_config` and
-`link_claude` share `LINK_FN`, which never overwrites a real file or directory: it
-reports it as blocked and keeps linking the rest. To test, use a throwaway home
-(`HOME=$(mktemp -d) make restore DEVENV=work`), never the real one.
+The linking logic lives in `scripts/link.zsh` (check it with `zsh -n`); the Makefile only
+dispatches. Its `link` never overwrites a real file or directory: it reports it as
+blocked and keeps linking the rest. Shell code left in the Makefile must run on both BSD
+(macOS) and GNU userland: no `ln -T`, no GNU regex (`\+`, `\s`). To test, use a throwaway
+home (`HOME=$(mktemp -d) make restore DEVENV=work`), never the real one.
 
-`claude/` and the `~/.config` dirs are not backed up: the symlinks make the repo the live config, so edits show
-up in `git status`. Shared preferences go in `claude/common/`; anything that differs by
+Nothing is backed up: the symlinks make the repo the live config, so edits show up in
+`git status`. Shared preferences go in `claude/common/`; anything that differs by
 machine (permissions, model, hooks that need a locally installed binary, git identity)
 goes in the profile directory. Never add `~/.claude.json`, `.credentials.json` or any
 file under `~/.claude/projects/` — they hold tokens and machine-local state.
@@ -180,7 +176,7 @@ vim.keymap.set("n", "<leader>rr", "<cmd>Rest run<CR>",
 - Changes should generally be made to **one environment** (`personal/` or
   `work/`) and manually ported to the other if needed -- they are not auto-synced.
 - The `lazy-lock.json` files pin plugin versions; update them via `:Lazy update`
-  in Neovim. With `~/.config/nvim` symlinked (`restore_config`) the change is already
+  in Neovim. With `~/.config/nvim` symlinked (`link_config`) the change is already
   in the repo; commit it.
 - Commit messages follow conventional commits format (as enforced by the
   headless CopilotChat script in `lua/scripts/run_cc_headless.lua`).

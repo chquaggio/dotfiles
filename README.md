@@ -11,7 +11,8 @@ Configs for zsh, tmux, Neovim (LazyVim), lazygit, opencode and the coding agents
 ```
 .
 ├── Brewfile              # every tool the configs depend on (macOS)
-├── Makefile              # restore / backup / link targets
+├── Makefile              # restore / link targets
+├── scripts/link.zsh      # symlinks a profile into $HOME
 ├── work/config/          # .zprofile, .zshrc, .zsh_plugins.txt, tmux.conf,
 │                         # nvim/, lazygit/, opencode/
 ├── personal/config/      # same layout, no .zprofile
@@ -29,7 +30,7 @@ to that path).
 
 ```bash
 make brew                        # brew bundle --file=Brewfile
-make restore DEVENV=work         # symlinks + copies, see below
+make restore DEVENV=work         # symlinks the profile into $HOME, see below
 uv python install 3.13 --default # python/python3 in ~/.local/bin (Apple's is 3.9)
 fnm install --lts                # Node for copilot.lua and Mason LSPs
 make docker_plugins              # only if you use docker compose/buildx
@@ -101,24 +102,27 @@ needs `DEVENV=work` or `DEVENV=personal`.
 | `help` | List the targets (also the default) |
 | `brew` | `brew bundle` the Brewfile; fails clearly if `brew` is missing |
 | `docker_plugins` | Merge `cliPluginsExtraDirs` into `~/.docker/config.json` |
-| `restore` | `restore_config` + `restore_tmux` + `restore_zsh` + `link_claude` |
-| `restore_config` | Symlink `nvim/`, `lazygit/`, `opencode/` into `~/.config` |
-| `restore_tmux` | Copy `tmux.conf` to `~/.tmux.conf`; clone TPM if missing |
-| `restore_zsh` | Copy `.zshrc`, `.zsh_plugins.txt` and, if the profile has one, `.zprofile` |
+| `restore` | `tpm`, then every link below |
+| `link_config` | Symlink `nvim/`, `lazygit/`, `opencode/` into `~/.config` |
+| `link_home` | Symlink `.zshrc`, `.zprofile`, `.zsh_plugins.txt` and `tmux.conf` (as `~/.tmux.conf`) into `$HOME` |
 | `link_claude` | Symlink `claude/common` + `claude/<DEVENV>` into `~/.claude`; link `AGENTS.md` for opencode and pi |
-| `backup` | `backup_config` + `backup_tmux` + `backup_zsh` |
-| `backup_config` | Copy back `~/.config` dirs that are real directories; symlinked ones are skipped |
-| `backup_tmux`, `backup_zsh` | Copy the home files back into the profile |
+| `tpm` | Clone TPM if missing; `prefix + I` in tmux then fetches the plugins |
 
-### Symlinks instead of copies
+### The repo is the live config
 
-`restore_config` and `link_claude` make the repo the live config: edits made in
-Neovim, lazygit, Claude Code (`/permissions`, plugin toggles) or by `:Lazy update`
-land in the repo and show up in `git status`. Commit them like any other change.
+Every config is a symlink into the repo, made by `scripts/link.zsh`. Edits made in
+Neovim, lazygit, Claude Code (`/permissions`, plugin toggles), by `:Lazy update` or by
+an installer that appends to `~/.zshrc` land in the repo and show up in `git status`.
+Commit them, or discard them with `git checkout`. There is nothing to back up.
 
-Both targets refuse to overwrite a real file or directory. Each one that is in the
-way is reported as blocked, every other link is still made, and the target exits
-non-zero. Move the blocked items aside and rerun. Reruns are idempotent.
+Linking never overwrites a real file or directory. Each one in the way is reported
+as blocked, every other link is still made, and the command exits non-zero. Move the
+blocked items aside and rerun. Reruns are idempotent.
+
+Each machine links its own clone and its own profile (`work` on the Mac, `personal`
+on WSL), so tools on one machine write that profile's files only. Changes reach the
+other machine through git; `claude/common/` is the one layer both edit, so pull
+before changing it.
 
 ### `.zprofile` and `.zshrc`
 

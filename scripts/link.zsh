@@ -48,9 +48,11 @@ link_home() {
 
 # claude/common, then the profile layer, item by item, so Claude Code's runtime state
 # in ~/.claude (history, projects/, credentials) is never touched. skills/, rules/ and
-# hooks/ link their children so profile items can sit next to common ones. opencode
-# and pi read the same AGENTS.md. When ~/.config/opencode is itself a symlink, that
-# AGENTS.md link lands in <profile>/config/opencode/, which .gitignore excludes.
+# hooks/ link their children so profile items can sit next to common ones.
+# AGENTS.md stays out of ~/.claude: CLAUDE.md imports it, and Claude Code also loads
+# ~/.claude/AGENTS.md as an ancestor's project file whenever the cwd is under $HOME, so
+# it would load twice. opencode and pi link the repo file. When ~/.config/opencode is
+# itself a symlink, that link lands in <profile>/config/opencode/, which .gitignore excludes.
 link_claude() {
   local claude=$HOME/.claude layer item name sub
   mkdir -p $claude
@@ -58,7 +60,7 @@ link_claude() {
     for item in $repo/claude/$layer/*; do
       name=${item:t}
       case $name in
-        __pycache__) ;;
+        __pycache__|AGENTS.md) ;;
         skills|rules|hooks)
           mkdir -p $claude/$name
           for sub in $item/*; do link $sub $claude/$name/${sub:t}; done ;;
@@ -67,8 +69,8 @@ link_claude() {
     done
   done
   mkdir -p $HOME/.config/opencode $HOME/.pi/agent
-  link $claude/AGENTS.md $HOME/.config/opencode/AGENTS.md
-  link $claude/AGENTS.md $HOME/.pi/agent/AGENTS.md
+  link $repo/claude/common/AGENTS.md $HOME/.config/opencode/AGENTS.md
+  link $repo/claude/common/AGENTS.md $HOME/.pi/agent/AGENTS.md
 }
 
 for group in $wanted; do

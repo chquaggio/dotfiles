@@ -1,0 +1,13 @@
+import os
+from collections.abc import AsyncIterator
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+engine = create_async_engine(os.environ["DATABASE_URL"])
+Session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def get_session() -> AsyncIterator[AsyncSession]:
+    """One session per unit of work; a FastAPI route takes it with Depends(get_session)."""
+    async with Session() as session:
+        yield session

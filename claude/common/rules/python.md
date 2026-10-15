@@ -24,11 +24,21 @@ paths:
   `itertools.chain`.
 - ruff formats and lints. Before claiming done: `uv run ruff check --fix . && uv run
   ruff format .`; run `uv run mypy` too when the project configures it.
-- Tests: pytest, `asyncio_mode = auto` — async tests are plain `async def test_*`.
-  External HTTP goes through `respx`; the DB fixture in `tests/conftest.py` is the
-  only database tests touch.
-- SQLAlchemy 2.0 style: `Mapped[...]` columns, `select()` executed on an async
-  session; no legacy `Query`. Pydantic v2 API: `model_validate`, `model_dump`,
-  `ConfigDict`.
-- FastAPI: one router per resource, dependencies through `Depends`, request and
-  response schemas in `schemas/`, ORM models in `models/`.
+
+## House stack
+
+The user knows this stack and reviews work in it fastest, so it is the default. A
+project's existing choices win. The stack applies to a new project, which starts from
+the `python-project` skill, and to a capability the project hasn't chosen yet.
+
+- Web API: FastAPI. One router per resource, dependencies through `Depends`, request
+  and response schemas in `schemas/`, ORM models in `models/`.
+- Validation: Pydantic v2 API: `model_validate`, `model_dump`, `ConfigDict`.
+- Database: SQLAlchemy 2 async. `Mapped[...]` columns, `select()` executed on an
+  `AsyncSession`; no legacy `Query`.
+- Dataframes: Polars, built from expressions; a row-wise `map_elements` is the last
+  resort. Lazy frames (`scan_*`, `.lazy()` … `.collect()`) for anything read from disk.
+- HTTP client: httpx.
+- Tests: pytest with `asyncio_mode = auto`, so async tests are plain `async def test_*`.
+  External HTTP goes through `respx`. Database tests use the `db` fixture in
+  `tests/conftest.py`, which rolls each test back, and touch no other database.

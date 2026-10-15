@@ -1,3 +1,67 @@
+## [2026-10-15 20:16] Push Summary
+
+### Conversation Context
+The owner asked for an assessment of the Claude Code config for strict use on servers,
+a better way to carry their opinions into sessions, and the right primitive for each job.
+A test showed the rtk hook let `git push` run without its ask prompt: Claude Code matches
+permission rules against the command a hook returns, and rtk marks an ask match by
+rewriting without a decision. The owner kept rtk, so a wrapper now drops rtk's rewrite
+wherever it could change a permission outcome. Deleting `CLAUDE.md` would have unloaded
+the global preferences in every repo with its own CLAUDE.md, so it stays the entry point,
+and AGENTS.md is no longer linked into `~/.claude`, where Claude Code loaded it twice.
+Several rules matched something other than intended: `Edit(/etc/**)` in user settings
+covers `~/.claude/etc`, `Read(./.env)` only the working directory, and `Bash(rm -rf /*)`
+refused every recursive delete by absolute path, while Claude Code's own critical-path
+guard already protects the root. github-push now runs a deterministic preflight (push
+identity, gitleaks) when it loads and as a hook on every push; while gh is logged out the
+SSH account is the identity, and only repos under it pass. Prompts for gated commands
+were unreadable, so a mod puts a plain-language explanation into the prompt, written by
+Haiku from the command alone; a hook that forces short commands was rejected because the
+owner accepts long commands and wants to see what they do. The Python rule now names a
+house stack (FastAPI, SQLAlchemy 2 async, Polars, httpx, pytest) that new projects get
+from a tested scaffold, whose SQLite fixture needed SQLAlchemy's savepoint recipe after a
+commit leaked between tests. context7 is dropped in favour of installed sources and raw
+docs; unattended server jobs were designed and deferred.
+
+### Commits
+1. `fix(claude): stop the rtk hook from bypassing ask rules`
+   - `claude/common/hooks/rtk-rewrite.py`: runs rtk's rewrite and drops it for ask
+     matches and for wrappers or assignments Claude Code strips before matching
+   - `claude/work/settings.json`, `claude/personal/settings.json`: the Bash hook runs the wrapper
+2. `fix(claude): load global instructions once, through CLAUDE.md`
+   - `scripts/link.zsh`: AGENTS.md stays out of `~/.claude`; opencode and pi link the repo file
+3. `fix(claude): make permission rules match what they say`
+   - `claude/work/settings.json`, `claude/personal/settings.json`: `.env` rules match at
+     any depth, with `.env.example` readable; `Edit(//etc/**)` is absolute; the `rm -rf`
+     wildcards that refused every absolute path are gone
+4. `chore(claude): drop commit and pr attribution`
+   - `claude/work/settings.json`, `claude/personal/settings.json`: empty `attribution`
+5. `feat(claude): deterministic preflight for github-push`
+   - `claude/common/skills/github-push/preflight.py`: branch, identity and gitleaks checks
+   - `claude/common/skills/github-push/SKILL.md`: user-invoked only, injects the preflight
+   - `Brewfile`: gitleaks
+   - `claude/work/settings.json`, `claude/personal/settings.json`: preflight hook on `git push`
+   - `claude/work/rules/git-identity.md`: the SSH account is the identity while gh is logged out
+6. `feat(claude): add harvest-feedback skill`
+   - `claude/common/skills/harvest-feedback/`: collects feedback memories, proposes where each belongs
+7. `feat(claude): house python stack and python-project scaffold`
+   - `claude/common/rules/python.md`: house stack as the default, project choices first
+   - `claude/common/skills/python-project/`: scaffold script, templates, ruff and mypy checks
+8. `feat(claude): explain-before-approve mod for permission prompts`
+   - `claude/common/mods/explain-before-approve/`: the mod and its tests
+   - `scripts/link.zsh`: links the children of `mods/`
+   - `claude/work/settings.json`, `claude/personal/settings.json`: `CLAUDE_CODE_PLUGIN_DIRS`
+   - `AGENTS.md`: the layout lists `mods/`
+9. `chore(claude): drop context7`
+   - `claude/common/rules/context7.md`: removed
+   - `claude/work/settings.json`: plugin entry removed, keys in the order its uninstall wrote
+10. `docs(claude): adopt the RTK.md that rtk init writes`
+    - `claude/common/RTK.md`: rtk's current instructions
+11. `chore(work): keep settings changed from claude code`
+    - `claude/work/settings.json`: effort xhigh for Opus 5.5, auto-compact and away summary off
+
+---
+
 ## [2026-10-13 16:08] Push Summary
 
 ### Conversation Context

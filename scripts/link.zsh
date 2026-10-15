@@ -47,8 +47,9 @@ link_home() {
 }
 
 # claude/common, then the profile layer, item by item, so Claude Code's runtime state
-# in ~/.claude (history, projects/, credentials) is never touched. skills/, rules/ and
-# hooks/ link their children so profile items can sit next to common ones.
+# in ~/.claude (history, projects/, credentials) is never touched. skills/, rules/,
+# hooks/ and mods/ link their children so profile items can sit next to common ones;
+# settings.json loads each mod through CLAUDE_CODE_PLUGIN_DIRS.
 # AGENTS.md stays out of ~/.claude: CLAUDE.md imports it, and Claude Code also loads
 # ~/.claude/AGENTS.md as an ancestor's project file whenever the cwd is under $HOME, so
 # it would load twice. opencode and pi link the repo file. When ~/.config/opencode is
@@ -61,7 +62,7 @@ link_claude() {
       name=${item:t}
       case $name in
         __pycache__|AGENTS.md) ;;
-        skills|rules|hooks)
+        skills|rules|hooks|mods)
           mkdir -p $claude/$name
           for sub in $item/*; do link $sub $claude/$name/${sub:t}; done ;;
         *) link $item $claude/$name ;;

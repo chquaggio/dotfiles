@@ -21,7 +21,8 @@ dotfiles/
 ├── claude/                   # Coding-agent global config, symlinked into ~/.claude
 │   ├── common/               # Shared identity: AGENTS.md (canonical cross-agent
 │   │                         # prefs), CLAUDE.md (imports it), OPINIONS.md, RTK.md,
-│   │                         # skills/, rules/ (path-scoped), hooks/, statusline.py
+│   │                         # skills/, rules/ (path-scoped), hooks/, statusline.py,
+│   │                         # mods/ (loaded via CLAUDE_CODE_PLUGIN_DIRS in settings.json)
 │   ├── personal/             # Profile overlay: settings.json, rules/git-identity.md
 │   └── work/                 # Same shape as personal/
 └── cheat_sheets/             # Reference docs (vim, tmux, aws)

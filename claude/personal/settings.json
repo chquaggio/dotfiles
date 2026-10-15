@@ -68,5 +68,8 @@
   },
   "tui": "fullscreen",
   "editorMode": "vim",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "env": {
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/explain-before-approve"
+  }
 }

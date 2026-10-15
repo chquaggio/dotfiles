@@ -41,6 +41,11 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/rtk-rewrite.py rtk hook claude"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "~/.claude/skills/github-push/preflight.py --hook"
           }
         ]
       }

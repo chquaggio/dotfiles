@@ -14,6 +14,7 @@ brew "git"
 brew "gh"
 brew "wget"
 brew "jq"
+brew "gitleaks"       # secret scan del preflight di github-push (skill e hook su git push)
 brew "tree"
 brew "btop"
 brew "pam-reattach"   # Touch ID per sudo dentro tmux

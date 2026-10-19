@@ -1,0 +1,5 @@
+{
+  "name": "explain-before-approve",
+  "version": "0.1.0",
+  "description": "Puts a plain-language explanation of a shell command into its permission prompt, written by a model that reads the command cold"
+}

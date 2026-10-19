@@ -6,3 +6,6 @@ debug
 foo.*
 *.log
 data
+__pycache__/
+# link_claude's AGENTS.md link, when ~/.config/opencode is a symlink into the repo
+*/config/opencode/AGENTS.md

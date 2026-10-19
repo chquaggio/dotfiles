@@ -2,24 +2,27 @@
 
 This repository is a **personal dotfiles** configuration manager. It stores and
 syncs development environment configs (Neovim, tmux, Zsh, lazygit) across two
-environments: `personal` and `work`.
+environments: `personal` (Ubuntu under WSL) and `work` (macOS, Apple Silicon).
 
 ## Repository Structure
 
 ```
 dotfiles/
 ├── Makefile                  # Backup/restore orchestration (zsh shell)
+├── Brewfile                  # macOS dependencies (`make brew`)
 ├── personal/config/          # Personal environment configs
 │   ├── nvim/                 # LazyVim-based Neovim config (Lua)
 │   ├── lazygit/config.yml    # lazygit custom commands
 │   ├── tmux.conf             # tmux configuration
 │   ├── .zshrc                # Zsh shell config
+│   ├── .zprofile             # Login env: brew shellenv, XDG_CONFIG_HOME (work only)
 │   └── .zsh_plugins.txt      # Antidote plugin list
 ├── work/config/              # Work environment configs (same structure)
 ├── claude/                   # Coding-agent global config, symlinked into ~/.claude
 │   ├── common/               # Shared identity: AGENTS.md (canonical cross-agent
 │   │                         # prefs), CLAUDE.md (imports it), OPINIONS.md, RTK.md,
-│   │                         # skills/, rules/ (path-scoped), hooks/, statusline.py
+│   │                         # skills/, rules/ (path-scoped), hooks/, statusline.py,
+│   │                         # mods/ (loaded via CLAUDE_CODE_PLUGIN_DIRS in settings.json)
 │   ├── personal/             # Profile overlay: settings.json, rules/git-identity.md
 │   └── work/                 # Same shape as personal/
 └── cheat_sheets/             # Reference docs (vim, tmux, aws)
@@ -27,34 +30,41 @@ dotfiles/
 
 Both `personal/` and `work/` follow the same layout. Key differences:
 - **personal**: Powerlevel10k, WSL clipboard, lua_ls + pylsp, neo-tree
-- **work**: robbyrussell theme, keychain SSH, pylsp only, codeium, kulala
+- **work**: macOS only. robbyrussell theme, launchd ssh-agent + Keychain, secrets from
+  the login Keychain (`security find-generic-password`), fnm, pylsp only, codeium, rest.nvim.
+  No Linux branches and no hardcoded `/home/...` paths: use `$HOME`/`~`.
 
 ## Build / Backup / Restore Commands
 
-All commands require `DEVENV=personal` or `DEVENV=work`:
+`help`, `brew`, `docker_plugins` and `tpm` run without `DEVENV`; every other target
+requires `DEVENV=personal` or `DEVENV=work`:
 
 ```bash
-make backup DEVENV=personal          # Full backup (nvim, lazygit, tmux, zsh)
-make backup_config DEVENV=personal   # nvim/ and lazygit/ from ~/.config/
-make backup_tmux DEVENV=personal     # ~/.tmux.conf
-make backup_zsh DEVENV=personal      # ~/.zshrc and ~/.zsh_plugins.txt
-make restore DEVENV=personal         # Full restore (inverse of backup + link_claude)
-make restore_config DEVENV=personal  # Restore nvim/ and lazygit/
-make restore_tmux DEVENV=personal    # Restore ~/.tmux.conf
-make restore_zsh DEVENV=personal     # Restore ~/.zshrc and plugins
+make help                            # Show available targets (default goal)
+make brew                            # brew bundle --file=Brewfile
+make docker_plugins                  # macOS: merge cliPluginsExtraDirs into ~/.docker/config.json
+make tpm                             # Clone TPM if missing
+make restore DEVENV=personal         # tpm + link_config + link_home + link_claude
+make link_config DEVENV=personal     # Symlink nvim/, lazygit/, opencode/ into ~/.config
+make link_home DEVENV=personal       # Symlink .zshrc, .zprofile, .zsh_plugins.txt, tmux.conf into $HOME
 make link_claude DEVENV=personal     # Symlink claude/common + claude/personal into
                                      # ~/.claude; link AGENTS.md for opencode and pi
-make help DEVENV=personal            # Show available targets
 ```
 
-`claude/` is not backed up: the symlinks make the repo the live config, so edits show
-up in `git status`. Shared preferences go in `claude/common/`; anything that differs by
+The linking logic lives in `scripts/link.zsh` (check it with `zsh -n`); the Makefile only
+dispatches. Its `link` never overwrites a real file or directory: it reports it as
+blocked and keeps linking the rest. Shell code left in the Makefile must run on both BSD
+(macOS) and GNU userland: no `ln -T`, no GNU regex (`\+`, `\s`). To test, use a throwaway
+home (`HOME=$(mktemp -d) make restore DEVENV=work`), never the real one.
+
+Nothing is backed up: the symlinks make the repo the live config, so edits show up in
+`git status`. Shared preferences go in `claude/common/`; anything that differs by
 machine (permissions, model, hooks that need a locally installed binary, git identity)
 goes in the profile directory. Never add `~/.claude.json`, `.credentials.json` or any
 file under `~/.claude/projects/` — they hold tokens and machine-local state.
 
 The Makefile uses `/bin/zsh` as its shell. There is no build step, test suite,
-or CI/CD pipeline. The `DEVENV` variable is **required** for every target.
+or CI/CD pipeline.
 
 ## Testing
 
@@ -137,7 +147,8 @@ vim.keymap.set("n", "<leader>rr", "<cmd>Rest run<CR>",
 - Use `#` comments to describe sections
 - Group related config: plugins, PATH, aliases, functions, SSH, external tools
 - Shell functions use `name() { ... }` syntax (no `function` keyword)
-- Aliases for common tools: `vim=nvim`, `cat="batcat -p"`, `python=python3`
+- Aliases for common tools: `vim=nvim`, `cat="batcat -p"` (personal, Ubuntu); work aliases `cat` to
+  `bat -p` only when `bat` exists. Work has no `python` alias: uv provides `python`/`python3` in `~/.local/bin`
 
 ### YAML (lazygit)
 
@@ -166,6 +177,7 @@ vim.keymap.set("n", "<leader>rr", "<cmd>Rest run<CR>",
 - Changes should generally be made to **one environment** (`personal/` or
   `work/`) and manually ported to the other if needed -- they are not auto-synced.
 - The `lazy-lock.json` files pin plugin versions; update them via `:Lazy update`
-  in Neovim, then back up with `make backup_config`.
+  in Neovim. With `~/.config/nvim` symlinked (`link_config`) the change is already
+  in the repo; commit it.
 - Commit messages follow conventional commits format (as enforced by the
   headless CopilotChat script in `lua/scripts/run_cc_headless.lua`).

@@ -1,0 +1,27 @@
+[tool.ruff.lint]
+extend-select = [
+    # Errors propagate loudly: no blanket catch, no swallow, no handler that only re-raises
+    "BLE001", "S110", "S112", "TRY203", "B904",
+    # Flat code
+    "C901", "PLR0912", "SIM102", "RET505",
+    # Comments say what code can't; dead code goes, it isn't commented out
+    "ERA001",
+    # Builtin generics and `X | None` over `typing` equivalents
+    "UP006", "UP007", "UP035", "UP045",
+]
+
+[tool.mypy]
+strict = true
+# A guard the types already rule out is reported as unreachable code
+warn_unreachable = true
+
+[tool.pyright]
+# Read by the editor's and Claude's pyright language server
+reportUnnecessaryIsInstance = "error"
+reportUnnecessaryComparison = "error"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# One event loop for the session, so session-scoped async fixtures (the db engine) work
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"

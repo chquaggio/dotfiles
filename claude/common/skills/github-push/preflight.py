@@ -56,6 +56,17 @@ def check_branch():
     report("ok", "branch", f"{branch} -> {target}, {count} unpushed commit(s)")
 
 
+# ssh as git runs it for this repo: core.sshCommand can pick a key per repo, so plain ssh
+# may greet another account. Through the shell, as git does, which also expands its `~`.
+def git_ssh(*args, check=True):
+    command = (
+        os.environ.get("GIT_SSH_COMMAND")
+        or run("git", "config", "core.sshCommand", check=False).stdout.strip()
+        or "ssh"
+    )
+    return run("sh", "-c", f'{command} "$@"', "ssh", *args, check=check)
+
+
 def check_identity():
     url = run("git", "remote", "get-url", "--push", "origin").stdout.strip()
     ssh_url = re.match(r"^(?:ssh://)?git@([^:/]+)[:/](.+?)(?:\.git)?/?$", url)
@@ -71,15 +82,12 @@ def check_identity():
         return
     host, repo = ssh_url.groups()
     # Resolves ~/.ssh/config aliases such as github-work -> github.com
-    hostname = re.search(
-        r"^hostname (\S+)$", run("ssh", "-G", host).stdout, re.M
-    ).group(1)
+    hostname = re.search(r"^hostname (\S+)$", git_ssh("-G", host).stdout, re.M).group(1)
     if hostname != "github.com":
         report("ok", "identity", f"skipped, origin {url} is not on GitHub")
         return
     # GitHub greets on stderr and exits 1, since it offers no shell
-    greeting = run(
-        "ssh",
+    greeting = git_ssh(
         "-T",
         "-o",
         "BatchMode=yes",

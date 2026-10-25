@@ -1,9 +1,15 @@
 # Git identity (work profile)
 
-- The account `gh auth status` reports is the identity; key `~/.ssh/id_ed25519`,
-  held by the macOS Keychain (`UseKeychain`/`AddKeysToAgent` in `~/.ssh/config`).
-  While gh is logged out, the account `ssh -T git@github.com` greets is the identity,
-  and only a repo under that account can be pushed.
-- Before any push, `ssh -T git@github.com` must greet that same account and
-  `git remote get-url origin` must live under it. Otherwise stop and ask — never
-  push under a mismatched identity.
+- Two GitHub accounts, picked by where the repo lives:
+  - under `~/personal/`: `chquaggio`, key `~/.ssh/id_ed25519`, through
+    `core.sshCommand` in `~/.gitconfig-personal`;
+  - anywhere else: `christianquaggio`, key `~/.ssh/work`, through `Host github.com`
+    in `~/.ssh/config`.
+- A `chquaggio` repo is cloned under `~/personal/`; elsewhere it pushes as the work
+  account.
+- Plain `ssh -T git@github.com` always greets `christianquaggio`. The account a repo
+  pushes as is the one its own ssh command greets, run from inside the repo:
+  `sh -c "$(git config core.sshCommand || echo ssh) -T git@github.com"`.
+- Before any push, that greeting must name the account `git remote get-url origin`
+  lives under, and `gh auth status`, when logged in, the same account. Otherwise stop
+  and ask — never push under a mismatched identity.

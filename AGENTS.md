@@ -16,7 +16,10 @@ dotfiles/
 │   ├── tmux.conf             # tmux configuration
 │   ├── .zshrc                # Zsh shell config
 │   ├── .zprofile             # Login env: brew shellenv, XDG_CONFIG_HOME (work only)
-│   └── .zsh_plugins.txt      # Antidote plugin list
+│   ├── .zsh_plugins.txt      # Antidote plugin list
+│   ├── .gitconfig            # Work identity; includes .gitconfig-personal (work only)
+│   ├── .gitconfig-personal   # Key + email for repos under ~/personal/ (work only)
+│   └── ssh_config            # Linked as ~/.ssh/config (work only)
 ├── work/config/              # Work environment configs (same structure)
 ├── claude/                   # Coding-agent global config, symlinked into ~/.claude
 │   ├── common/               # Shared identity: AGENTS.md (canonical cross-agent
@@ -33,6 +36,9 @@ Both `personal/` and `work/` follow the same layout. Key differences:
 - **work**: macOS only. robbyrussell theme, launchd ssh-agent + Keychain, secrets from
   the login Keychain (`security find-generic-password`), fnm, pylsp only, codeium, rest.nvim.
   No Linux branches and no hardcoded `/home/...` paths: use `$HOME`/`~`.
+  Two GitHub accounts, picked by repo location (`claude/work/rules/git-identity.md`):
+  no `IdentityFile` under `Host *` in `ssh_config`, since ssh adds it to the
+  `github.com` key and the agent's load order then picks the account.
 
 ## Build / Backup / Restore Commands
 
@@ -46,7 +52,8 @@ make docker_plugins                  # macOS: merge cliPluginsExtraDirs into ~/.
 make tpm                             # Clone TPM if missing
 make restore DEVENV=personal         # tpm + link_config + link_home + link_claude
 make link_config DEVENV=personal     # Symlink nvim/, lazygit/, opencode/ into ~/.config
-make link_home DEVENV=personal       # Symlink .zshrc, .zprofile, .zsh_plugins.txt, tmux.conf into $HOME
+make link_home DEVENV=personal       # Symlink shell, tmux, git configs into $HOME; ssh_config
+                                     # as ~/.ssh/config
 make link_claude DEVENV=personal     # Symlink claude/common + claude/personal into
                                      # ~/.claude; link AGENTS.md for opencode and pi
 ```

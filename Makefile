@@ -51,7 +51,7 @@ restore: tpm # Link every config of $(DEVENV) into $HOME and install TPM
 link_config: # Symlink nvim/, lazygit/, opencode/ into ~/.config
 	@scripts/link.zsh $(DEVENV) config
 
-link_home: # Symlink .zshrc, .zprofile, .zsh_plugins.txt and tmux.conf into $HOME
+link_home: # Symlink the shell, tmux, git and ssh configs into $HOME
 	@scripts/link.zsh $(DEVENV) home
 
 link_claude: # Symlink claude/common + claude/$(DEVENV) into ~/.claude; AGENTS.md for opencode/pi

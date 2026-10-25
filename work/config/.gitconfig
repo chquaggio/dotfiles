@@ -1,0 +1,6 @@
+[user]
+	name = Christian Quaggio
+	email = christian.quaggio@komebistudio.com
+# Repos under ~/personal/ belong to the chquaggio GitHub account
+[includeIf "gitdir:~/personal/"]
+	path = ~/.gitconfig-personal

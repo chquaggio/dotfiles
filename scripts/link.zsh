@@ -37,13 +37,18 @@ link_config() {
   done
 }
 
-# Dotfiles in $HOME; a profile may leave some out (personal has no .zprofile)
+# Dotfiles in $HOME; a profile may leave some out (personal has no .zprofile, git or
+# ssh config)
 link_home() {
   local f
-  for f in .zshrc .zprofile .zsh_plugins.txt; do
+  for f in .zshrc .zprofile .zsh_plugins.txt .gitconfig .gitconfig-personal; do
     [[ -f $src/$f ]] && link $src/$f $HOME/$f
   done
   [[ -f $src/tmux.conf ]] && link $src/tmux.conf $HOME/.tmux.conf
+  if [[ -f $src/ssh_config ]]; then
+    mkdir -p -m 700 $HOME/.ssh
+    link $src/ssh_config $HOME/.ssh/config
+  fi
 }
 
 # claude/common, then the profile layer, item by item, so Claude Code's runtime state

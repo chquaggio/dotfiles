@@ -11,7 +11,7 @@ source ${ZDOTDIR:-~}/.antidote/antidote.zsh
 antidote load
 
 # Location of this repo, used by cheat()
-export DOTFILES="${DOTFILES:-$HOME/work/dotfiles}"
+export DOTFILES="${DOTFILES:-$HOME/personal/dotfiles}"
 
 # New terminals open in $HOME: start in ~/work instead. Shells started anywhere else
 # (a tmux pane, an editor's terminal) keep their directory.

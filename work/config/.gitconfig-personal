@@ -1,0 +1,7 @@
+# Included by ~/.gitconfig for repos under ~/personal/: the chquaggio GitHub account.
+[user]
+	email = quaggio.christian@gmail.com
+[core]
+	# -F /dev/null skips ~/.ssh/config, whose github.com block would add the work key:
+	# with both keys listed, the one the agent loaded first decides the account
+	sshCommand = ssh -F /dev/null -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes

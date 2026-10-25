@@ -14,8 +14,9 @@ Configs for zsh, tmux, Neovim (LazyVim), lazygit, opencode and the coding agents
 ├── Makefile              # restore / link targets
 ├── scripts/link.zsh      # symlinks a profile into $HOME
 ├── work/config/          # .zprofile, .zshrc, .zsh_plugins.txt, tmux.conf,
+│                         # .gitconfig, .gitconfig-personal, ssh_config,
 │                         # nvim/, lazygit/, opencode/
-├── personal/config/      # same layout, no .zprofile
+├── personal/config/      # same layout, no .zprofile, git or ssh config
 ├── claude/               # coding-agent config, symlinked into ~/.claude
 │   ├── common/           # shared: AGENTS.md, CLAUDE.md, skills/, rules/, hooks/, ...
 │   ├── work/             # settings.json, rules/git-identity.md
@@ -25,8 +26,10 @@ Configs for zsh, tmux, Neovim (LazyVim), lazygit, opencode and the coding agents
 
 ## New Mac setup (work profile)
 
-The repo is expected at `~/work/dotfiles` (`cheat` uses `$DOTFILES`, which defaults
-to that path).
+The repo is expected at `~/personal/dotfiles`: it belongs to the `chquaggio` account,
+and git pushes as that account only under `~/personal/` (see [SSH and
+git](#ssh-and-git-two-github-accounts)). `cheat` uses `$DOTFILES`, which defaults to
+that path.
 
 ```bash
 make brew                        # brew bundle --file=Brewfile
@@ -59,19 +62,35 @@ token stays out of shell history):
 security add-generic-password -a "$USER" -s OC_GITHUB_PAT -w
 ```
 
-### SSH
+### SSH and git: two GitHub accounts
 
-macOS launchd already provides `SSH_AUTH_SOCK`, so the shell starts no agent. Let
-the Keychain hold the key passphrase with this in `~/.ssh/config` (not versioned):
+The Mac pushes to two GitHub accounts, and the repo's location picks which:
 
+| Repo under | Account | Key | Set by |
+|---|---|---|---|
+| `~/personal/` | `chquaggio` | `~/.ssh/id_ed25519` | `core.sshCommand` in `.gitconfig-personal` |
+| anywhere else | `christianquaggio` | `~/.ssh/work` | `Host github.com` in `ssh_config` |
+
+`make link_home` links `ssh_config` to `~/.ssh/config` and both gitconfig files into
+`$HOME`. `.gitconfig` includes `.gitconfig-personal` for repos under `~/personal/`,
+which also sets the personal commit email. The keys themselves are not versioned:
+copy them into `~/.ssh/` (mode 600).
+
+GitHub logs in as the account of the first key it accepts, and ssh offers keys
+loaded in the agent first, in load order. So each account's ssh command lists exactly
+one key with `IdentitiesOnly`, and the personal one skips `~/.ssh/config` (`-F
+/dev/null`), whose `github.com` block would add the work key next to it. Plain
+`ssh -T git@github.com` always greets the work account; to see the account a repo
+pushes as, run this from inside it:
+
+```bash
+sh -c "$(git config core.sshCommand || echo ssh) -T git@github.com"
 ```
-Host *
-  UseKeychain yes
-  AddKeysToAgent yes
-  IdentityFile ~/.ssh/id_ed25519
-```
 
-and add the key once with `ssh-add --apple-use-keychain ~/.ssh/id_ed25519`.
+macOS launchd already provides `SSH_AUTH_SOCK`, so the shell starts no agent;
+`UseKeychain` lets the Keychain hold the passphrase of a key that has one. The
+`Include` line is Colima's: `colima start` adds it when missing, and recognises the
+`~/` form.
 
 ### Docker (Colima)
 
@@ -104,7 +123,7 @@ needs `DEVENV=work` or `DEVENV=personal`.
 | `docker_plugins` | Merge `cliPluginsExtraDirs` into `~/.docker/config.json` |
 | `restore` | `tpm`, then every link below |
 | `link_config` | Symlink `nvim/`, `lazygit/`, `opencode/` into `~/.config` |
-| `link_home` | Symlink `.zshrc`, `.zprofile`, `.zsh_plugins.txt` and `tmux.conf` (as `~/.tmux.conf`) into `$HOME` |
+| `link_home` | Symlink `.zshrc`, `.zprofile`, `.zsh_plugins.txt`, `.gitconfig`, `.gitconfig-personal` and `tmux.conf` (as `~/.tmux.conf`) into `$HOME`, `ssh_config` as `~/.ssh/config` |
 | `link_claude` | Symlink `claude/common` + `claude/<DEVENV>` into `~/.claude`; link `AGENTS.md` for opencode and pi |
 | `tpm` | Clone TPM if missing; `prefix + I` in tmux then fetches the plugins |
 

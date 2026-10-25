@@ -1,0 +1,16 @@
+# Linked to ~/.ssh/config by `make link_home`.
+Include ~/.config/colima/ssh_config
+
+# GitHub logs in as the account of the first key it accepts. The work account
+# (christianquaggio) is the default; repos under ~/personal/ switch to chquaggio's key
+# through core.sshCommand in ~/.gitconfig-personal. IdentitiesOnly keeps the agent's
+# other keys from being offered first.
+Host github.com
+  IdentityFile ~/.ssh/work
+  IdentitiesOnly yes
+
+# No IdentityFile here: ssh adds up IdentityFile from every matching block, so a key
+# listed here would also be offered to github.com.
+Host *
+  UseKeychain yes
+  AddKeysToAgent yes

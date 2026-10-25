@@ -38,8 +38,6 @@
     ],
     "ask": [
       "Bash(sudo *)",
-      "Bash(rm -rf *)",
-      "Bash(rm -fr *)",
       "Bash(dd *)",
       "Bash(chmod -R *)",
       "Bash(chown -R *)",
@@ -129,7 +127,7 @@
   "autoMode": {
     "soft_deny": [
       "$defaults",
-      "Deleting or overwriting files outside the current working directory",
+      "Deleting or overwriting files outside the current working directory, except under temp dirs ($TMPDIR, /tmp, /private/tmp, /var/folders) and the session scratchpad",
       "Rewriting published git history, or any push that is not a fast-forward",
       "Destroying or recreating remote infrastructure, containers, volumes, or cluster resources",
       "Publishing a package, release, or artifact to a public registry"

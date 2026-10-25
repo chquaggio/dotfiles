@@ -65,7 +65,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {

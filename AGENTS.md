@@ -31,10 +31,12 @@ dotfiles/
 └── cheat_sheets/             # Reference docs (vim, tmux, aws)
 ```
 
-Both `personal/` and `work/` follow the same layout. Key differences:
-- **personal**: Powerlevel10k, WSL clipboard, lua_ls + pylsp, neo-tree
+Both `personal/` and `work/` follow the same layout, and share the Python and Markdown
+language servers (ruff, basedpyright, rumdl in `nvim/lsp/`; each prefers the project's
+`.venv`, so a project pins the version). Key differences:
+- **personal**: Powerlevel10k, WSL clipboard, lua_ls, neo-tree
 - **work**: macOS only. robbyrussell theme, launchd ssh-agent + Keychain, secrets from
-  the login Keychain (`security find-generic-password`), fnm, pylsp only, codeium, rest.nvim.
+  the login Keychain (`security find-generic-password`), fnm, codeium, rest.nvim.
   No Linux branches and no hardcoded `/home/...` paths: use `$HOME`/`~`.
   Two GitHub accounts, picked by repo location (`claude/work/rules/git-identity.md`):
   no `IdentityFile` under `Host *` in `ssh_config`, since ssh adds it to the

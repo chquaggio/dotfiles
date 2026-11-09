@@ -22,8 +22,10 @@ paths:
 - 3.15+ projects: flatten with unpacking in comprehensions (PEP 798),
   `[*xs for xs in groups]`, `{**d for d in ds}`, over a nested `for` or
   `itertools.chain`.
-- ruff formats and lints. Before claiming done: `uv run ruff check --fix . && uv run
-  ruff format .`; run `uv run mypy` too when the project configures it.
+- ruff formats and lints. Before claiming done: `uv run pytest`, then `uv run ruff
+  check --fix` and `uv run ruff format` on the files the change touched, so
+  unrelated files stay out of the diff; `uv run mypy` too when the project
+  configures it.
 
 ## House stack
 

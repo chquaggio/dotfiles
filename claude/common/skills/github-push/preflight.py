@@ -13,6 +13,7 @@ import fnmatch
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -32,6 +33,9 @@ VAULT_FILES = ["vault*.yml", "vault*.yaml"]
 TEMPLATE_SUFFIXES = (".example", ".sample", ".template", ".dist")
 PUSH_PERMISSIONS = {"ADMIN", "MAINTAIN", "WRITE"}
 PUSH = re.compile(r"\bgit\b[^\n;&|]*\bpush\b")
+# Where a push command names its repo; the hook's cwd is the session's, not the command's
+GIT_C = re.compile(r"^git\s+-C\s+(\S+)")
+CD = re.compile(r"\bcd\s+(\S+)\s*&&")
 
 results = []
 
@@ -229,9 +233,16 @@ def main():
         hook_input = json.load(sys.stdin)
         # The hook's `if` filter also fires on any command with $(), backticks or $VAR, so the
         # script decides; `git -C dir push` and `timeout 30 git push` count as pushes
-        if not PUSH.search(hook_input["tool_input"]["command"]):
+        command = hook_input["tool_input"]["command"]
+        push = PUSH.search(command)
+        if not push:
             return
         os.chdir(hook_input["cwd"])
+        repo_dirs = GIT_C.findall(push.group()) or CD.findall(command[: push.start()])
+        if repo_dirs:
+            os.chdir(
+                os.path.expanduser(os.path.expandvars(shlex.split(repo_dirs[-1])[0]))
+            )
     os.chdir(run("git", "rev-parse", "--show-toplevel").stdout.strip())
     if not HOOK:
         check_branch()
